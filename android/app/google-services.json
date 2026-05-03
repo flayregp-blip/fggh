@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "173318625887",
+    "project_id": "flayr-914e9",
+    "storage_bucket": "flayr-914e9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173318625887:android:08b33a65d0d9c4844cd9ea",
+        "android_client_info": {
+          "package_name": "com.abdullah.Flayr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173318625887-42p0crvq4jop24nipt12qbh2oiu9h6pp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.abdullah.Flayr",
+            "certificate_hash": "f8e81f6644adc245574b15254fa01d2465ec3c35"
+          }
+        },
+        {
+          "client_id": "173318625887-smcg4io82bjqg3q66u8pcqb2ssbs7r9c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo4H7Xonw1dMJDycGYjNcGIfSgkQnzD5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173318625887-smcg4io82bjqg3q66u8pcqb2ssbs7r9c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "173318625887-j9kfm263lcp1v638epf32set70rcvgb9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.abdullah.Flayr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
