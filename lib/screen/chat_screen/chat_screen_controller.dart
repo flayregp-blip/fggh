@@ -252,7 +252,12 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
     Loggers.success('FIREBASE MESSAGE : ${message.toJson()}');
 
     // Entry chat list
-    chatCollection.doc(time.toString()).set(message.toJson()).catchError((error) {
+    chatCollection.doc(time.toString()).set(message.toJson()).then((value) {
+      if (!chatList.any((element) => element.id == message.id)) {
+        chatList.add(message);
+        chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
+      }
+    }).catchError((error) {
       Loggers.error('Chat Collection ERROR : $error');
     });
 
@@ -404,11 +409,15 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         if (message == null) continue;
         switch (change.type) {
           case DocumentChangeType.added:
-            chatList.add(message);
+            if (!chatList.any((element) => element.id == message.id)) {
+              chatList.add(message);
+            }
             break;
           case DocumentChangeType.modified:
-            chatList.removeWhere((element) => element.id == message.id);
-            chatList.add(message);
+            int index = chatList.indexWhere((element) => element.id == message.id);
+            if (index != -1) {
+              chatList[index] = message;
+            }
             break;
           case DocumentChangeType.removed:
             chatList.removeWhere((element) => element.id == message.id);
@@ -418,7 +427,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
 
       chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
 
-      if (event.docs.isNotEmpty) {
+      if (event.docs.isNotEmpty && lastDocument == null) {
         lastDocument = event.docs.last;
       }
     });
@@ -440,48 +449,30 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         query = query.startAfterDocument(lastDocument!);
       }
 
-      // Use snapshots() instead of get()
-      var subscription = query
+      var event = await query
           .withConverter(
             fromFirestore: (snapshot, _) => MessageData.fromJson(snapshot.data()!),
             toFirestore: (msg, _) => msg.toJson(),
           )
-          .snapshots()
-          .listen((event) {
-        if (event.docs.isEmpty) {
-          hasMore.value = false;
-          return;
+          .get();
+
+      if (event.docs.isEmpty) {
+        hasMore.value = false;
+        return;
+      }
+
+      lastDocument = event.docs.last;
+
+      for (var doc in event.docs) {
+        final message = doc.data();
+        if (!chatList.any((element) => element.id == message.id)) {
+          chatList.add(message);
         }
+      }
 
-        lastDocument = event.docs.last;
-
-        for (var change in event.docChanges) {
-          final message = change.doc.data();
-          if (message == null) continue;
-
-          switch (change.type) {
-            case DocumentChangeType.added:
-              if (!chatList.any((m) => m.id == message.id)) {
-                chatList.add(message);
-              }
-              break;
-            case DocumentChangeType.modified:
-              chatList.removeWhere((m) => m.id == message.id);
-              chatList.add(message);
-              break;
-            case DocumentChangeType.removed:
-              chatList.removeWhere((m) => m.id == message.id);
-              break;
-          }
-        }
-
-        chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
-      });
-
-      // Store this listener
-      chatListeners.add(subscription);
+      chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
     } catch (e) {
-      Loggers.error("Error in live paginated fetch: $e");
+      Loggers.error("Error in fetchMoreChatList: $e");
     } finally {
       isLoading.value = false;
     }
