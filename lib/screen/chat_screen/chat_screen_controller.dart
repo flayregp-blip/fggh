@@ -269,17 +269,21 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
     // Loggers.success('RECEIVER USER isExist: $isReceiverUserExist');
     String senderLastMessage = getLastMessage(type, message, isSender: true);
     String receiverLastMessage = getLastMessage(type, message, isSender: false);
-    ChatThread conversation = conversationUser.value;
-    conversation.id = time.toString();
-    conversation.lastMsg = senderLastMessage;
-    conversation.msgCount = 0;
-    conversation.isDeleted = false;
-
-    if (isReceiverUserExist) {
-      documentSender.update(conversation.toJson());
-    } else {
+    // Update Sender's thread info in Firestore
+    documentSender.update({
+      FirebaseConst.id: time.toString(),
+      FirebaseConst.lastMsg: senderLastMessage,
+      FirebaseConst.msgCount: 0, // Sender has read their own sent message
+      FirebaseConst.isDeleted: false,
+    }).catchError((e) {
+      // If document doesn't exist, set it
+      ChatThread conversation = conversationUser.value;
+      conversation.id = time.toString();
+      conversation.lastMsg = senderLastMessage;
+      conversation.msgCount = 0;
+      conversation.isDeleted = false;
       documentSender.set(conversation.toJson());
-    }
+    });
 
     // For Receiver side
     bool isSenderUserExist = (await documentReceiver.get()).exists;
@@ -395,6 +399,10 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
   void _getChat() async {
     _listenToChatThreadUser();
     await Future.delayed(const Duration(milliseconds: 100));
+    
+    // Clear list before fetching from cloud to ensure data is fresh and synced
+    chatList.clear();
+    
     var subscription = chatCollection
         .where(FirebaseConst.noDeleteIds, arrayContains: myUser?.id)
         .where(FirebaseConst.id, isGreaterThan: conversationUser.value.deletedId)
@@ -407,6 +415,8 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         .listen((event) {
       Loggers.info(' FETCHING CHAT MESSAGES : ${event.docChanges.length}');
       
+      bool hasNewIncomingMessages = false;
+
       for (var change in event.docChanges) {
         final message = change.doc.data();
         if (message == null) continue;
@@ -415,6 +425,9 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
           case DocumentChangeType.added:
             if (!chatList.any((element) => element.id == message.id)) {
               chatList.add(message);
+              if (message.userId != myUser?.id) {
+                hasNewIncomingMessages = true;
+              }
             }
             break;
           case DocumentChangeType.modified:
@@ -431,19 +444,17 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         }
       }
 
-      // Force UI update and sort
+      // Sort by ID (Timestamp) descending for reverse ListView
       chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
       chatList.refresh();
 
-      if (event.docs.isNotEmpty && lastDocument == null) {
+      if (event.docs.isNotEmpty) {
+        // Always update lastDocument for pagination based on current cloud state
         lastDocument = event.docs.last;
       }
 
       // Automatically mark as read if new messages arrive while the chat is open
-      bool hasNewMessages = event.docChanges.any((change) => 
-        change.type == DocumentChangeType.added && change.doc.data()?.userId != myUser?.id);
-      
-      if (hasNewMessages) {
+      if (hasNewIncomingMessages) {
         _markAsRead();
       }
     });
@@ -869,8 +880,9 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       conversationUser.update((val) {
         val?.msgCount = 0;
       });
-      // Update Firestore
+      // Update Firestore with a direct map to ensure the server field is reset
       await documentSender.update({FirebaseConst.msgCount: 0});
+      Loggers.success('Chat marked as read in Firestore');
     } catch (e) {
       Loggers.error('Mark as read error: $e');
     }
