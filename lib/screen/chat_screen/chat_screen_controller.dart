@@ -117,6 +117,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
     _init();
     _getChat();
     _addUsersFirebaseFireStore();
+    _markAsRead();
   }
 
   @override
@@ -429,6 +430,11 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
 
       if (event.docs.isNotEmpty && lastDocument == null) {
         lastDocument = event.docs.last;
+      }
+
+      // Automatically mark as read if new messages arrive while the chat is open
+      if (event.docChanges.any((change) => change.type == DocumentChangeType.added)) {
+        _markAsRead();
       }
     });
     chatListeners.add(subscription);
@@ -848,8 +854,15 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
   }
 
   _markAsRead() async {
-    if ((await documentSender.get()).exists) {
+    try {
+      // Clear local state first for immediate UI feedback
+      conversationUser.update((val) {
+        val?.msgCount = 0;
+      });
+      // Update Firestore
       await documentSender.update({FirebaseConst.msgCount: 0});
+    } catch (e) {
+      Loggers.error('Mark as read error: $e');
     }
   }
 
