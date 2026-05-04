@@ -257,6 +257,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       if (!chatList.any((element) => element.id == message.id)) {
         chatList.add(message);
         chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
+        chatList.refresh(); // Ensure UI updates immediately
       }
     }).catchError((error) {
       Loggers.error('Chat Collection ERROR : $error');
@@ -402,12 +403,14 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         .withConverter(
             fromFirestore: (snapshot, options) => MessageData.fromJson(snapshot.data()!),
             toFirestore: (MessageData value, options) => value.toJson())
-        .snapshots()
+        .snapshots(includeMetadataChanges: true)
         .listen((event) {
       Loggers.info(' FETCHING CHAT MESSAGES : ${event.docChanges.length}');
+      
       for (var change in event.docChanges) {
         final message = change.doc.data();
         if (message == null) continue;
+        
         switch (change.type) {
           case DocumentChangeType.added:
             if (!chatList.any((element) => element.id == message.id)) {
@@ -418,6 +421,8 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
             int index = chatList.indexWhere((element) => element.id == message.id);
             if (index != -1) {
               chatList[index] = message;
+            } else {
+              chatList.add(message);
             }
             break;
           case DocumentChangeType.removed:
@@ -426,14 +431,19 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         }
       }
 
+      // Force UI update and sort
       chatList.sort((a, b) => b.id?.compareTo(a.id ?? 0) ?? 0);
+      chatList.refresh();
 
       if (event.docs.isNotEmpty && lastDocument == null) {
         lastDocument = event.docs.last;
       }
 
       // Automatically mark as read if new messages arrive while the chat is open
-      if (event.docChanges.any((change) => change.type == DocumentChangeType.added)) {
+      bool hasNewMessages = event.docChanges.any((change) => 
+        change.type == DocumentChangeType.added && change.doc.data()?.userId != myUser?.id);
+      
+      if (hasNewMessages) {
         _markAsRead();
       }
     });
