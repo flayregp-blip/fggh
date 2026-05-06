@@ -84,8 +84,9 @@ class SplashScreenController extends BaseController {
         bool onBoardingShow = SessionManager.instance.getBool(SessionKeys.isOnBoardingScreenSelect);
         if (isLanguageSelect == false) {
           Get.off(() => const SelectLanguageScreen(languageNavigationType: LanguageNavigationType.fromStart));
-        } else if (onBoardingShow == false && (setting?.onBoarding ?? []).isNotEmpty) {
-          Get.off(() => const OnBoardingScreen());
+        } else if (false) {
+  // disabled 
+          
         } else {
           Get.off(() => const LoginScreen());
         }
