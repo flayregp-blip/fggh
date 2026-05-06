@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
         )),
         child: Stack(
           children: [
-            const ThemeBlurBg(),
+            Container(color: Colors.black),
             SingleChildScrollView(
               child: SafeArea(
                 bottom: false,
