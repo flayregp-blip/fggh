@@ -28,7 +28,7 @@ class SelectLanguageScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const ThemeBlurBg(),
+          Container(color: const Color(0xFF1A1A1A)),
           SafeArea(
             top: false,
             child: Column(
