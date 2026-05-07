@@ -94,13 +94,13 @@ class DashboardScreenController extends BaseController with GetSingleTickerProvi
   void onClose() {
     animationController.dispose();
     _unReadCountSubscription.cancel();
-    if (index == 0) {
+    if (index == 1) {
   }
 
   onChanged(int index) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarBrightness: index == 0 || index == 2 ? Brightness.dark : Brightness.light));
-    if (index == 1) {
+    if (index == 0) {
       onFeedPostScrollDown(index);
     }
     if (selectedPageIndex.value == index) return;
