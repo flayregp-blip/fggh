@@ -100,7 +100,7 @@ class DashboardScreenController extends BaseController with GetSingleTickerProvi
   onChanged(int index) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarBrightness: index == 0 || index == 2 ? Brightness.dark : Brightness.light));
-    if (index == 0) {
+    if (index == 1) {
       onFeedPostScrollDown(index);
     }
     if (selectedPageIndex.value == index) return;
