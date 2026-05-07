@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class ColorRes {
   static const Color blackPure = Color(0xFF000000);
   static const Color whitePure = Color(0xFFFFFFFF);
-  static const Color themeGradient1 = Color(0xFFD97ACB);
-  static const Color themeGradient2 = Color(0xFFC35CFE);
-  static const Color themeAccentSolid = Color(0xFFB754F9);
+  static const Color themeGradient1 = Color(0xFF2C2C2C);
+  static const Color themeGradient2 = Color(0xFF1A1A1A);
+  static const Color themeAccentSolid = Color(0xFF222222);
   static const Color themeColor = Color(0xFF15161A);
   static const Color textDarkGrey = Color(0xFF454545);
   static const Color textLightGrey = Color(0xFF8B8B8B);
