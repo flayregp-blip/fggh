@@ -36,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
               child: ProsteIndexedStack(
                 index: controller.selectedPageIndex.value,
                 children: [
-                  IndexedStackChild(child: const HomeScreen(), preload: true),
+                  
                   IndexedStackChild(child: FeedScreen(myUser: myUser), preload: true),
                   IndexedStackChild(child: const HomeScreen(), preload: true),
                   IndexedStackChild(child: const ExploreScreen(), preload: true),
