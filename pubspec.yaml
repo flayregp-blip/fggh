@@ -128,7 +128,8 @@ dependencies:
   zego_express_engine: ^3.23.0
   rxdart: ^0.28.0
   image: ^4.7.2
-
+  image: ^4.7.2
+  lottie: ^3.1.0
   ### 🔌 Custom Plugins
   retrytech_plugin:
     git:
