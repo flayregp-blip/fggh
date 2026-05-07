@@ -876,12 +876,11 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
 
   _markAsRead() async {
     try {
-      // Clear local state first for immediate UI feedback
       conversationUser.update((val) {
         val?.msgCount = 0;
       });
-      // Update Firestore with a direct map to ensure the server field is reset
       await documentSender.update({FirebaseConst.msgCount: 0});
+      await documentReceiver.update({FirebaseConst.msgCount: 0});
       Loggers.success('Chat marked as read in Firestore');
     } catch (e) {
       Loggers.error('Mark as read error: $e');
