@@ -33,7 +33,7 @@ class DashboardScreenController extends BaseController with GetSingleTickerProvi
     AssetRes.icChat,
     AssetRes.icProfile
   ];
-  RxInt selectedPageIndex = 1.obs;
+  RxInt selectedPageIndex = 0.obs;
   RxDouble scaleValue = 1.0.obs;
   Function(int index)? onBottomIndexChanged;
   Rx<PostUploadingProgress> postProgress = Rx(PostUploadingProgress());
@@ -52,8 +52,8 @@ class DashboardScreenController extends BaseController with GetSingleTickerProvi
   @override
   void onInit() {
     super.onInit();
-    if (selectedPageIndex.value == 0 || selectedPageIndex.value == 1) {
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
+    if (selectedPageIndex.value == 0) {
+      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark));
     }
     Get.put(GifSheetController());
     Get.put(FirebaseFirestoreController());
