@@ -26,8 +26,8 @@ import 'package:zego_express_engine/zego_express_engine.dart';
 
 class DashboardScreenController extends BaseController with GetSingleTickerProviderStateMixin {
   List<String> bottomIconList = [
-    AssetRes.icReel,
     AssetRes.icPost,
+    AssetRes.icReel,
     AssetRes.icLiveStream,
     AssetRes.icSearch,
     AssetRes.icChat,
