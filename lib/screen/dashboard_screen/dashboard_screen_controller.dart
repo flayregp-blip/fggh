@@ -94,7 +94,7 @@ class DashboardScreenController extends BaseController with GetSingleTickerProvi
   void onClose() {
     animationController.dispose();
     _unReadCountSubscription.cancel();
-    if (index == 1) {
+    super.onClose();
   }
 
   onChanged(int index) {
