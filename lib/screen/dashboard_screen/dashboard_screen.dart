@@ -38,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   IndexedStackChild(child: const HomeScreen(), preload: true),
                   IndexedStackChild(child: FeedScreen(myUser: myUser), preload: true),
-                  IndexedStackChild(child: const HomeScreen(), preload: true),
+                  IndexedStackChild(child: const LiveStreamSearchScreen(), preload: true),
                   IndexedStackChild(child: const ExploreScreen(), preload: true),
                   IndexedStackChild(child: const MessageScreen(), preload: true),
                   IndexedStackChild(
