@@ -122,7 +122,7 @@ class SendGiftSheet extends StatelessWidget {
                             borderRadius: SmoothBorderRadius(
                                 cornerRadius: 5, cornerSmoothing: 1),
                           ),
-                          color: bgLightGrey(context),
+                          color: Colors.transparent,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
