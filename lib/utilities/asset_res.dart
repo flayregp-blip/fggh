@@ -68,6 +68,7 @@ class AssetRes {
   static const String icMore1 = '${icons}ic_more_1.png';
   static const String icPostComment = '${icons}ic_post_comment.png';
   static const String icPostShare = '${icons}ic_post_share.png';
+  static const String icRepost = '${icons}ic_repost.png';
   static const String icPostBookmark = '${icons}ic_post_bookmark.png';
   static const String icLive = '${icons}ic_live.png';
   static const String icVerifiedWhite = '${icons}ic_verified_white.png';
@@ -142,4 +143,5 @@ class AssetRes {
   static const String icNoInternet = '${icons}ic_no_internet.png';
   static const String icLinkPlaceholder = '${icons}ic_link_placeholder.png';
   static const String icAdd = '${icons}ic_add.png';
+  static const String icRepostCircle = '${icons}ic_camera_flip.png'; // Using camera_flip as repost icon
 }

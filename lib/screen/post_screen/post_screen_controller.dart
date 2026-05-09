@@ -4,24 +4,26 @@ Future<void> handleShare() async {
     return Loggers.error('Invalid Post ID : ${_post.id}');
   }
 
-  // Show confirmation dialog
-  Get.bottomSheet(
-    ConfirmationSheet(
-      title: 'إعادة النشر',
-      description: 'هل تريد إعادة نشر هذا المنشور على حسابك؟',
-      positiveText: 'إعادة النشر',
-      onTap: () async {
-        Get.back();
-        showLoader();
-        StatusModel model = await PostService.instance.increaseShareCount(postId: _post.id ?? -1);
-        stopLoader();
-        if (model.status == true) {
-          postData.update((val) => val?.increaseShares(1));
-          showSnackBar('تمت إعادة النشر بنجاح ✓');
-        }
-      },
-    ),
-  );
+  // One-tap Repost logic: No Share Sheet, direct repost to user's profile
+  showLoader();
+  try {
+    StatusModel model = await PostService.instance.increaseShareCount(postId: _post.id ?? -1);
+    stopLoader();
+    
+    if (model.status == true) {
+      // Update the shares count immediately
+      postData.update((val) => val?.increaseShares(1));
+      
+      // Show success toast notification
+      showSnackBar('تمت إعادة النشر بنجاح ✓');
+    } else {
+      showSnackBar('فشل إعادة النشر. حاول مجددًا');
+    }
+  } catch (e) {
+    stopLoader();
+    showSnackBar('حدث خطأ أثناء إعادة النشر');
+    Loggers.error('Error in handleShare: $e');
+  }
 }      val?.saveToggle(post.isSaved == true ? false : true);
     });
     try {
@@ -51,20 +53,6 @@ Future<void> handleShare() async {
         controller.updateUnPinPost(postData.value);
       }
     }
-  }
-
-  Future<void> handleShare() async {
-    Post _post = postData.value;
-    if (_post.id == null) {
-      return Loggers.error('Invalid Post ID : ${_post.id}');
-    }
-
-    ShareManager.shared.showCustomShareSheet(
-        post: _post,
-        keys: ShareKeys.post,
-        onShareSuccess: () {
-          postData.update((val) => val?.increaseShares(1));
-        });
   }
 
   void handleDelete(Post post, {required bool isModerator}) async {
