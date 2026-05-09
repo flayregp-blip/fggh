@@ -11,21 +11,27 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _logoScaleController;
-  late Animation<double> _logoScaleAnimation;
+  // Main title animation
+  late AnimationController _titleController;
+  late Animation<double> _titleScaleAnimation;
+  late Animation<double> _titleOpacityAnimation;
 
-  late AnimationController _logoOpacityController;
-  late Animation<double> _logoOpacityAnimation;
-
+  // Glow pulse
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
 
-  late AnimationController _textController;
-  late Animation<double> _textOpacityAnimation;
-  late Animation<Offset> _textSlideAnimation;
+  // Subtitle slide up
+  late AnimationController _subtitleController;
+  late Animation<double> _subtitleOpacityAnimation;
+  late Animation<Offset> _subtitleSlideAnimation;
 
-  late AnimationController _shineController;
-  late Animation<double> _shineAnimation;
+  // Dev text
+  late AnimationController _devController;
+  late Animation<double> _devOpacityAnimation;
+
+  // Line expand
+  late AnimationController _lineController;
+  late Animation<double> _lineWidthAnimation;
 
   @override
   void initState() {
@@ -36,68 +42,79 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _initAnimations() {
-    _logoScaleController = AnimationController(
+    // Title: scale + fade
+    _titleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1000),
     );
-    _logoScaleAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _logoScaleController, curve: Curves.elasticOut),
+    _titleScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _titleController, curve: Curves.elasticOut),
+    );
+    _titleOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          parent: _titleController,
+          curve: const Interval(0.0, 0.5, curve: Curves.easeIn)),
     );
 
-    _logoOpacityController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _logoOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoOpacityController, curve: Curves.easeIn),
-    );
-
+    // Glow pulse
     _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
     )..repeat(reverse: true);
-    _glowAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
+    _glowAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    _textController = AnimationController(
+    // Line expand
+    _lineController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 600),
     );
-    _textOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
-    );
-    _textSlideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
+    _lineWidthAnimation = Tween<double>(begin: 0.0, end: 160.0).animate(
+      CurvedAnimation(parent: _lineController, curve: Curves.easeOut),
     );
 
-    _shineController = AnimationController(
+    // Subtitle
+    _subtitleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _subtitleOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _subtitleController, curve: Curves.easeIn),
+    );
+    _subtitleSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _subtitleController, curve: Curves.easeOut),
+    );
+
+    // Dev text
+    _devController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _shineAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _shineController, curve: Curves.easeOut),
+    _devOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _devController, curve: Curves.easeIn),
     );
   }
 
   void _startAnimations() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    _logoOpacityController.forward();
-    _logoScaleController.forward();
+    await Future.delayed(const Duration(milliseconds: 300));
+    _titleController.forward();
     await Future.delayed(const Duration(milliseconds: 700));
-    _shineController.forward();
+    _lineController.forward();
     await Future.delayed(const Duration(milliseconds: 400));
-    _textController.forward();
+    _subtitleController.forward();
+    await Future.delayed(const Duration(milliseconds: 400));
+    _devController.forward();
   }
 
   @override
   void dispose() {
-    _logoScaleController.dispose();
-    _logoOpacityController.dispose();
+    _titleController.dispose();
     _glowController.dispose();
-    _textController.dispose();
-    _shineController.dispose();
+    _lineController.dispose();
+    _subtitleController.dispose();
+    _devController.dispose();
     super.dispose();
   }
 
@@ -107,27 +124,27 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Background glow
+          // Background glow behind text
           AnimatedBuilder(
             animation: _glowAnimation,
             builder: (context, child) {
               return Center(
                 child: Container(
-                  width: 350,
-                  height: 350,
+                  width: 300,
+                  height: 300,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF00D4FF)
-                            .withOpacity(0.08 * _glowAnimation.value),
-                        blurRadius: 120,
+                        color: const Color(0xFF00C8FF)
+                            .withOpacity(0.07 * _glowAnimation.value),
+                        blurRadius: 100,
                         spreadRadius: 60,
                       ),
                       BoxShadow(
-                        color: const Color(0xFFFF0099)
-                            .withOpacity(0.06 * _glowAnimation.value),
-                        blurRadius: 140,
+                        color: const Color(0xFFFF0088)
+                            .withOpacity(0.05 * _glowAnimation.value),
+                        blurRadius: 120,
                         spreadRadius: 40,
                       ),
                     ],
@@ -137,81 +154,88 @@ class _SplashScreenState extends State<SplashScreen>
             },
           ),
 
+          // Main content
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Logo
+                // FLAYR title
                 AnimatedBuilder(
-                  animation: Listenable.merge([
-                    _logoScaleAnimation,
-                    _logoOpacityAnimation,
-                    _glowAnimation,
-                    _shineAnimation,
-                  ]),
+                  animation: _titleController,
                   builder: (context, child) {
                     return Opacity(
-                      opacity: _logoOpacityAnimation.value,
+                      opacity: _titleOpacityAnimation.value,
                       child: Transform.scale(
-                        scale: _logoScaleAnimation.value,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Glow ring
-                            Container(
-                              width: 180,
-                              height: 180,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF00D4FF).withOpacity(
-                                        0.3 * _glowAnimation.value),
-                                    blurRadius: 40,
-                                    spreadRadius: 10,
+                        scale: _titleScaleAnimation.value,
+                        child: AnimatedBuilder(
+                          animation: _glowController,
+                          builder: (context, child) {
+                            return Stack(
+                              children: [
+                                // Glow shadow behind text
+                                Text(
+                                  'FLAYR',
+                                  style: TextStyle(
+                                    fontSize: 72,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 12,
+                                    foreground: Paint()
+                                      ..maskFilter = MaskFilter.blur(
+                                        BlurStyle.normal,
+                                        20 * _glowAnimation.value,
+                                      )
+                                      ..color = const Color(0xFF00C8FF)
+                                          .withOpacity(
+                                              0.6 * _glowAnimation.value),
                                   ),
-                                  BoxShadow(
-                                    color: const Color(0xFFFF0099).withOpacity(
-                                        0.2 * _glowAnimation.value),
-                                    blurRadius: 50,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Logo image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(32),
-                              child: Image.asset(
-                                'assets/images/ic_launcher.png',
-                                width: 150,
-                                height: 150,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-
-                            // Shine flash
-                            if (_shineAnimation.value > 0 &&
-                                _shineAnimation.value < 1)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(32),
-                                child: Container(
-                                  width: 150,
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Colors.white.withOpacity(0.4 *
-                                            (1 - _shineAnimation.value)),
-                                        Colors.transparent,
-                                      ],
+                                ),
+                                // Main gradient text
+                                ShaderMask(
+                                  shaderCallback: (bounds) =>
+                                      const LinearGradient(
+                                    colors: [
+                                      Color(0xFF00C8FF),
+                                      Color(0xFF8B5CF6),
+                                      Color(0xFFFF0088),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ).createShader(bounds),
+                                  child: const Text(
+                                    'FLAYR',
+                                    style: TextStyle(
+                                      fontSize: 72,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 12,
+                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                // Expanding line
+                AnimatedBuilder(
+                  animation: _lineController,
+                  builder: (context, child) {
+                    return Container(
+                      width: _lineWidthAnimation.value,
+                      height: 1.5,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Color(0xFF00C8FF),
+                            Color(0xFFFF0088),
+                            Colors.transparent,
                           ],
                         ),
                       ),
@@ -219,85 +243,69 @@ class _SplashScreenState extends State<SplashScreen>
                   },
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 14),
 
-                // Text
+                // Egypt subtitle
                 AnimatedBuilder(
-                  animation: _textController,
+                  animation: _subtitleController,
                   builder: (context, child) {
                     return FadeTransition(
-                      opacity: _textOpacityAnimation,
+                      opacity: _subtitleOpacityAnimation,
                       child: SlideTransition(
-                        position: _textSlideAnimation,
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                ShaderMask(
-                                  shaderCallback: (bounds) =>
-                                      const LinearGradient(
-                                    colors: [
-                                      Color(0xFF00D4FF),
-                                      Color(0xFFFF0099),
-                                    ],
-                                  ).createShader(bounds),
-                                  child: const Text(
-                                    'Flayr',
-                                    style: TextStyle(
-                                      fontSize: 42,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white,
-                                      letterSpacing: 2,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Egypt',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xFF888888),
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              width: 120,
-                              height: 1,
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    Color(0xFF00D4FF),
-                                    Color(0xFFFF0099),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'Developed by Abdullah Mabrouk',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w300,
-                                color: Color(0xFF555555),
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ],
+                        position: _subtitleSlideAnimation,
+                        child: const Text(
+                          'E G Y P T',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Color(0xFF777777),
+                            letterSpacing: 6,
+                          ),
                         ),
                       ),
                     );
                   },
                 ),
               ],
+            ),
+          ),
+
+          // Dev text at bottom
+          Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: AnimatedBuilder(
+              animation: _devController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _devOpacityAnimation.value,
+                  child: const Column(
+                    children: [
+                      Text(
+                        'Developed by',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF444444),
+                          letterSpacing: 1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Abdullah Mabrouk',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF666666),
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
