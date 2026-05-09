@@ -1,30 +1,104 @@
-Future<void> handleShare() async {
-  Post _post = postData.value;
-  if (_post.id == null) {
-    return Loggers.error('Invalid Post ID : ${_post.id}');
+import 'dart:async';
+import 'package:get/get.dart';
+import 'package:shortzz/common/controller/base_controller.dart';
+import 'package:shortzz/common/extensions/common_extension.dart';
+import 'package:shortzz/common/functions/debounce_action.dart';
+import 'package:shortzz/common/manager/firebase_notification_manager.dart';
+import 'package:shortzz/common/manager/haptic_manager.dart';
+import 'package:shortzz/common/manager/logger.dart';
+import 'package:shortzz/common/manager/session_manager.dart';
+import 'package:shortzz/common/service/api/post_service.dart';
+import 'package:shortzz/common/service/api/moderator_service.dart';
+import 'package:shortzz/model/general/status_model.dart';
+import 'package:shortzz/model/post_story/post_by_id.dart';
+import 'package:shortzz/model/post_story/post_model.dart';
+import 'package:shortzz/model/user_model/user_model.dart';
+import 'package:shortzz/screen/comment_sheet/comment_sheet.dart';
+import 'package:shortzz/screen/comment_sheet/comment_sheet_controller.dart';
+import 'package:shortzz/screen/gift_sheet/send_gift_sheet_controller.dart';
+import 'package:shortzz/screen/profile_screen/profile_screen_controller.dart';
+import 'package:shortzz/screen/report_sheet/report_sheet.dart';
+import 'package:shortzz/utilities/theme_res.dart';
+import 'package:shortzz/languages/languages_keys.dart';
+import 'package:shortzz/common/widget/confirmation_dialog.dart';
+
+class PostScreenController extends BaseController {
+  Timer? _debounce;
+
+  bool _isLikeLoading = false;
+  bool _isSavedLoading = false;
+
+  User? get myUser => SessionManager.instance.getUser();
+  Function triggerLikeAnim = () {};
+
+  Rx<Post> postData;
+  bool isFromSinglePostScreen;
+
+  PostScreenController(this.postData, this.isFromSinglePostScreen);
+
+  void updatePost(Post post) {
+    postData.update((val) {
+      val = post;
+    });
   }
 
-  // One-tap Repost logic: No Share Sheet, direct repost to user's profile
-  showLoader();
-  try {
-    StatusModel model = await PostService.instance.increaseShareCount(postId: _post.id ?? -1);
-    stopLoader();
-    
-    if (model.status == true) {
-      // Update the shares count immediately
-      postData.update((val) => val?.increaseShares(1));
-      
-      // Show success toast notification
-      showSnackBar('تمت إعادة النشر بنجاح ✓');
-    } else {
-      showSnackBar('فشل إعادة النشر. حاول مجددًا');
+  void onLike(Post? post) async {
+    if (_isLikeLoading || post == null) return;
+    _isLikeLoading = true;
+
+    postData.update((val) {
+      val?.likeToggle(!(post.isLiked ?? false));
+    });
+
+    try {
+      await (post.isLiked ?? false ? _likePostApi(post) : _disLikePostApi(post));
+    } finally {
+      _isLikeLoading = false;
     }
-  } catch (e) {
-    stopLoader();
-    showSnackBar('حدث خطأ أثناء إعادة النشر');
-    Loggers.error('Error in handleShare: $e');
   }
-}      val?.saveToggle(post.isSaved == true ? false : true);
+
+  Future<void> _likePostApi(Post? post) async {
+    StatusModel model = await PostService.instance.likePost(postId: post?.id ?? -1);
+
+    if (model.status == true) {
+      if (post?.user?.notifyPostLike == 1 && myUser?.id != post?.userId) {
+        FirebaseNotificationManager.instance.sendLocalisationNotification(LKey.activityLikedPost,
+            type: NotificationType.post,
+            body: NotificationInfo(id: post?.id),
+            deviceType: post?.user?.device ?? 0,
+            deviceToken: post?.user?.deviceToken ?? '',
+            languageCode: post?.user?.appLanguage);
+      }
+    }
+  }
+
+  Future<void> _disLikePostApi(Post? post) async {
+    await PostService.instance.disLikePost(postId: post?.id?.convertInt ?? -1);
+  }
+
+  void onComment({PostByIdData? postByIdData, bool isFromNotification = false}) async {
+    if (isFromSinglePostScreen) {
+      if (Get.isRegistered<CommentSheetController>()) {
+        final controller = Get.find<CommentSheetController>();
+        controller.commentHelper.detectableTextFocusNode.requestFocus();
+      }
+    } else {
+      Get.bottomSheet(
+          CommentSheet(
+              post: postData.value,
+              isFromNotification: isFromNotification,
+              comment: postByIdData?.comment,
+              replyComment: postByIdData?.reply),
+          isScrollControlled: true);
+    }
+  }
+
+  void onSaved(Post? post) async {
+    if (_isSavedLoading || post == null) return;
+    _isSavedLoading = true;
+    HapticManager.shared.light();
+    postData.update((val) {
+      val?.saveToggle(post.isSaved == true ? false : true);
     });
     try {
       DebounceAction.shared.call(() async {
@@ -52,6 +126,34 @@ Future<void> handleShare() async {
       } else {
         controller.updateUnPinPost(postData.value);
       }
+    }
+  }
+
+  Future<void> handleShare() async {
+    Post _post = postData.value;
+    if (_post.id == null) {
+      return Loggers.error('Invalid Post ID : ${_post.id}');
+    }
+
+    // One-tap Repost logic: No Share Sheet, direct repost to user's profile
+    showLoader();
+    try {
+      StatusModel model = await PostService.instance.increaseShareCount(postId: _post.id ?? -1);
+      stopLoader();
+      
+      if (model.status == true) {
+        // Update the shares count immediately
+        postData.update((val) => val?.increaseShares(1));
+        
+        // Show success toast notification
+        showSnackBar('تمت إعادة النشر بنجاح ✓');
+      } else {
+        showSnackBar('فشل إعادة النشر. حاول مجددًا');
+      }
+    } catch (e) {
+      stopLoader();
+      showSnackBar('حدث خطأ أثناء إعادة النشر');
+      Loggers.error('Error in handleShare: $e');
     }
   }
 
