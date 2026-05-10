@@ -30,7 +30,7 @@ class PostScreenController extends BaseController {
   bool _isSavedLoading = false;
 
   User? get myUser => SessionManager.instance.getUser();
-  Function triggerLikeAnim = () {};
+  Function triggerLikeAnim = () {}; // 🎯 Persisted here
 
   Rx<Post> postData;
   bool isFromSinglePostScreen;
@@ -64,8 +64,8 @@ class PostScreenController extends BaseController {
 
     if (model.status == true) {
       if (post?.user?.notifyPostLike == 1 && myUser?.id != post?.userId) {
-        FirebaseNotificationManager.instance.sendLocalisationNotification(
-            LKey.activityLikedPost,
+        print(post?.user?.toJson());
+        FirebaseNotificationManager.instance.sendLocalisationNotification(LKey.activityLikedPost,
             type: NotificationType.post,
             body: NotificationInfo(id: post?.id),
             deviceType: post?.user?.device ?? 0,
@@ -123,6 +123,7 @@ class PostScreenController extends BaseController {
   void handlePinUnpinPost(int isPinned) {
     if (Get.isRegistered<ProfileScreenController>(tag: ProfileScreenController.tag)) {
       final controller = Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
+
       if (isPinned == 0) {
         controller.updatePinPost(postData.value);
       } else {
@@ -165,8 +166,7 @@ class PostScreenController extends BaseController {
     stopLoader();
     if (model.status == true) {
       if (Get.isRegistered<ProfileScreenController>(tag: ProfileScreenController.tag)) {
-        final controller =
-            Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
+        final controller = Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
         controller.posts.removeWhere((element) => element.id == post.id);
         postData.value = Post();
         Get.delete<PostScreenController>(tag: '${post.id}');
@@ -176,8 +176,7 @@ class PostScreenController extends BaseController {
 
   void handleReport(Post? post) {
     if (post == null) return;
-    Get.bottomSheet(ReportSheet(id: post.id, reportType: ReportType.post),
-        isScrollControlled: true);
+    Get.bottomSheet(ReportSheet(id: post.id, reportType: ReportType.post), isScrollControlled: true);
   }
 
   void notifyCommentSheet(PostByIdData? data) {
