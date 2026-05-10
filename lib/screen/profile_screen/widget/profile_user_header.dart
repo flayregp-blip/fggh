@@ -52,21 +52,17 @@ class ProfileUserHeader extends StatelessWidget {
                   StatItem(value: user?.followingCount ?? 0, label: LKey.following.tr),
                 ],
                 onTap: (value) {
-                  if (isUserNotFound) {
-                    return;
-                  }
+                  if (isUserNotFound) return;
                   switch (value) {
                     case 0:
                       break;
                     case 1:
                       user?.checkIsBlocked(() {
-                        // Followers
                         Get.to(() => FollowFollowingScreen(type: FollowFollowingType.follower, user: user));
                       });
                       break;
                     case 2:
                       user?.checkIsBlocked(() {
-                        // Following
                         Get.to(() => FollowFollowingScreen(type: FollowFollowingType.following, user: user));
                       });
                       break;
@@ -109,7 +105,6 @@ class ProfileStatsRow extends StatelessWidget {
     RxBool isHeroEnable = false.obs;
     return Row(
       children: [
-        // Profile Picture
         if (userNotFound)
           Image.asset(AssetRes.icUserPlaceholder, width: 80, height: 80, fit: BoxFit.cover)
         else
@@ -123,7 +118,6 @@ class ProfileStatsRow extends StatelessWidget {
             },
             onLongPress: () {
               user?.checkIsBlocked(() {
-                // _showProfilePreview(context, previewKey, user);
                 Navigator.push(
                   context,
                   PageRouteBuilder(
@@ -158,12 +152,9 @@ class ProfileStatsRow extends StatelessWidget {
                     enabled: isHeroEnable.value,
                     child: Hero(
                       tag: 'profile-${user?.id}',
-                      // must match the original tag
                       child: CustomImage(
                         size: !isStoryAvailable ? const Size(80, 80) : const Size(70, 70),
-                        // 80 - 10 (padding accounted)
                         image: user?.isBlock == true ? '' : user?.profilePhoto?.addBaseURL(),
-                        // if user is block then don't show the image
                         fullName: user?.fullname,
                       ),
                     ),
@@ -172,7 +163,6 @@ class ProfileStatsRow extends StatelessWidget {
               ),
             ),
           ),
-        // Stats Columns
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -198,7 +188,6 @@ class ProfileStatsRow extends StatelessWidget {
   }
 }
 
-// Individual Stat Column Widget
 class StatColumn extends StatelessWidget {
   final num value;
   final String label;
@@ -244,6 +233,7 @@ class UserNameView extends StatelessWidget {
           username: user?.username,
           style: TextStyleCustom.unboundedSemiBold600(color: textDarkGrey(context), fontSize: 17),
           isVerify: user?.isVerify,
+          verifyType: user?.verifyType,
           iconSize: 22,
           child: user?.getLevel.id == null
               ? const SizedBox()
@@ -387,8 +377,8 @@ class UserButtonView extends StatelessWidget {
                   height: 45,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: ShapeDecoration(
-                    shape:
-                        SmoothRectangleBorder(borderRadius: SmoothBorderRadius(cornerRadius: 10, cornerSmoothing: 1)),
+                    shape: SmoothRectangleBorder(
+                        borderRadius: SmoothBorderRadius(cornerRadius: 10, cornerSmoothing: 1)),
                     color: bgGrey(context),
                   ),
                   child: Image.asset(isMe ? AssetRes.icShare1 : AssetRes.icMore, height: 21, width: 21)),
@@ -409,8 +399,8 @@ class UserButtonView extends StatelessWidget {
                     height: 45,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: ShapeDecoration(
-                      shape:
-                          SmoothRectangleBorder(borderRadius: SmoothBorderRadius(cornerRadius: 10, cornerSmoothing: 1)),
+                      shape: SmoothRectangleBorder(
+                          borderRadius: SmoothBorderRadius(cornerRadius: 10, cornerSmoothing: 1)),
                       color: bgGrey(context),
                     ),
                     child: Image.asset(AssetRes.icMore, height: 21, width: 21),
@@ -523,7 +513,6 @@ class RowButton extends StatelessWidget {
   }
 }
 
-// Stat Item Model
 class StatItem {
   final num value;
   final String label;
