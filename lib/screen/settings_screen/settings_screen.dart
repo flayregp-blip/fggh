@@ -21,6 +21,7 @@ import 'package:shortzz/utilities/asset_res.dart';
 import 'package:shortzz/utilities/style_res.dart';
 import 'package:shortzz/utilities/text_style_custom.dart';
 import 'package:shortzz/utilities/theme_res.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   final Function(User? user)? onUpdateUser;
@@ -85,6 +86,14 @@ class SettingsScreen extends StatelessWidget {
                 title: LKey.coinWallet,
                 onTap: () {
                   Get.to(() => const CoinWalletScreen());
+                },
+              ),
+              // قسم التوثيق
+              SettingIconTextWithArrow(
+                icon: AssetRes.icBlueTick,
+                title: LKey.verifyAccount,
+                onTap: () {
+                  Get.to(() => const VerificationScreen());
                 },
               ),
               SettingLabel(title: LKey.privacy.toUpperCase()),
@@ -175,6 +184,203 @@ class SettingsScreen extends StatelessWidget {
         ))
       ],
     ));
+  }
+}
+
+// شاشة التوثيق
+class VerificationScreen extends StatelessWidget {
+  const VerificationScreen({super.key});
+
+  void _contactSupport() async {
+    final Uri url = Uri.parse('https://wa.me/201029459233');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          CustomAppBar(title: 'توثيق الحساب'),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // عنوان
+                  Text(
+                    'أنواع التوثيق',
+                    style: TextStyleCustom.unboundedSemiBold600(
+                        fontSize: 18, color: textDarkGrey(context)),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // التوثيق الأزرق
+                  _VerifyTypeCard(
+                    color: Colors.blue,
+                    title: 'التوثيق الأزرق',
+                    description: 'للمستخدمين الموثقين',
+                    requirements: [
+                      'صورة بطاقة الهوية الوطنية',
+                      'صورة شخصية واضحة',
+                      'رقم هاتف موثق',
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+
+                  // التوثيق الأحمر
+                  _VerifyTypeCard(
+                    color: Colors.red,
+                    title: 'التوثيق الأحمر',
+                    description: 'للمشاهير و VIP',
+                    requirements: [
+                      'إثبات الشهرة (مقالات أو مواقع رسمية)',
+                      'صورة بطاقة الهوية',
+                      'رابط حساب موثق على منصة أخرى',
+                      'عدد متابعين لا يقل عن 10,000',
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+
+                  // التوثيق الأخضر
+                  _VerifyTypeCard(
+                    color: Colors.green,
+                    title: 'التوثيق الأخضر',
+                    description: 'للجهات الرسمية والحكومية',
+                    requirements: [
+                      'وثيقة رسمية من الجهة',
+                      'ختم رسمي معتمد',
+                      'بريد إلكتروني رسمي للجهة',
+                      'موقع رسمي للجهة',
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+
+                  // زر التواصل مع الدعم
+                  GestureDetector(
+                    onTap: _contactSupport,
+                    child: Container(
+                      width: double.infinity,
+                      height: 55,
+                      decoration: ShapeDecoration(
+                        shape: SmoothRectangleBorder(
+                          borderRadius: SmoothBorderRadius(
+                              cornerRadius: 12, cornerSmoothing: 1),
+                        ),
+                        gradient: StyleRes.themeGradient,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.support_agent,
+                              color: Colors.white, size: 24),
+                          const SizedBox(width: 10),
+                          Text(
+                            'تواصل مع الدعم الفني',
+                            style: TextStyleCustom.outFitMedium500(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Text(
+                      'سيتم الرد خلال 24 ساعة',
+                      style: TextStyleCustom.outFitLight300(
+                          fontSize: 13, color: textLightGrey(context)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VerifyTypeCard extends StatelessWidget {
+  final Color color;
+  final String title;
+  final String description;
+  final List<String> requirements;
+
+  const _VerifyTypeCard({
+    required this.color,
+    required this.title,
+    required this.description,
+    required this.requirements,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: ShapeDecoration(
+        shape: SmoothRectangleBorder(
+          borderRadius:
+              SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
+          side: BorderSide(color: color.withOpacity(0.3), width: 1.5),
+        ),
+        color: color.withOpacity(0.05),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.verified, color: color, size: 28),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyleCustom.unboundedSemiBold600(
+                        fontSize: 14, color: textDarkGrey(context)),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyleCustom.outFitLight300(
+                        fontSize: 13, color: textLightGrey(context)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'المستندات المطلوبة:',
+            style: TextStyleCustom.outFitMedium500(
+                fontSize: 13, color: textDarkGrey(context)),
+          ),
+          const SizedBox(height: 8),
+          ...requirements.map((req) => Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.check_circle_outline, color: color, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        req,
+                        style: TextStyleCustom.outFitLight300(
+                            fontSize: 13, color: textLightGrey(context)),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
   }
 }
 
