@@ -25,9 +25,7 @@ class UserModel {
   User? _data;
 
   bool? get status => _status;
-
   String? get message => _message;
-
   User? get data => _data;
 
   Map<String, dynamic> toJson() {
@@ -62,6 +60,7 @@ class User {
       this.notifyGiftReceived,
       this.notifyChat,
       this.isVerify,
+      this.verifyType,
       this.whoCanViewPost,
       this.showMyFollowing,
       this.receiveMessage,
@@ -116,6 +115,7 @@ class User {
     int? notifyGiftReceived,
     int? notifyChat,
     int? isVerify,
+    int? verifyType,
     int? whoCanViewPost,
     int? showMyFollowing,
     int? receiveMessage,
@@ -171,15 +171,14 @@ class User {
         notifyGiftReceived: notifyGiftReceived ?? this.notifyGiftReceived,
         notifyChat: notifyChat ?? this.notifyChat,
         isVerify: isVerify ?? this.isVerify,
+        verifyType: verifyType ?? this.verifyType,
         whoCanViewPost: whoCanViewPost ?? this.whoCanViewPost,
         showMyFollowing: showMyFollowing ?? this.showMyFollowing,
         receiveMessage: receiveMessage ?? this.receiveMessage,
         coinWallet: coinWallet ?? this.coinWallet,
-        coinCollectedLifetime:
-            coinCollectedLifetime ?? this.coinCollectedLifetime,
+        coinCollectedLifetime: coinCollectedLifetime ?? this.coinCollectedLifetime,
         coinGiftedLifetime: coinGiftedLifetime ?? this.coinGiftedLifetime,
-        coinPurchasedLifetime:
-            coinPurchasedLifetime ?? this.coinPurchasedLifetime,
+        coinPurchasedLifetime: coinPurchasedLifetime ?? this.coinPurchasedLifetime,
         bio: bio ?? this.bio,
         followerCount: followerCount ?? this.followerCount,
         followingCount: followingCount ?? this.followingCount,
@@ -226,6 +225,7 @@ class User {
     notifyGiftReceived = json['notify_gift_received'];
     notifyChat = json['notify_chat'];
     isVerify = json['is_verify'];
+    verifyType = json['verify_type'];
     whoCanViewPost = json['who_can_view_post'];
     showMyFollowing = json['show_my_following'];
     receiveMessage = json['receive_message'];
@@ -295,6 +295,7 @@ class User {
   num? notifyGiftReceived;
   num? notifyChat;
   int? isVerify;
+  int? verifyType;
   num? whoCanViewPost;
   num? showMyFollowing;
   num? receiveMessage;
@@ -351,6 +352,7 @@ class User {
     map['notify_gift_received'] = notifyGiftReceived;
     map['notify_chat'] = notifyChat;
     map['is_verify'] = isVerify;
+    map['verify_type'] = verifyType;
     map['who_can_view_post'] = whoCanViewPost;
     map['show_my_following'] = showMyFollowing;
     map['receive_message'] = receiveMessage;
@@ -404,7 +406,7 @@ class User {
     int i = isFollowing ? 1 : -1;
     followerCount = ((followerCount ?? 0) + i)
         .clamp(0, double.infinity)
-        .toInt(); // followerCount not less then 0
+        .toInt();
   }
 
   void updateBlockStatus(bool isBlock) {
