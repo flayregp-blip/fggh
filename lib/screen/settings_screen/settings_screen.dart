@@ -15,7 +15,6 @@ import 'package:shortzz/screen/select_language_screen/select_language_screen.dar
 import 'package:shortzz/screen/settings_screen/settings_screen_controller.dart';
 import 'package:shortzz/screen/settings_screen/widget/notifications_page.dart';
 import 'package:shortzz/screen/settings_screen/widget/setting_icon_text_with_arrow.dart';
-import 'package:shortzz/screen/subscription_screen/subscription_screen.dart';
 import 'package:shortzz/screen/term_and_privacy_screen/term_and_privacy_screen.dart';
 import 'package:shortzz/utilities/asset_res.dart';
 import 'package:shortzz/utilities/style_res.dart';
@@ -41,8 +40,6 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SubscriptionCard(
-                  controller: controller, onUpdateUser: onUpdateUser),
               SettingLabel(title: LKey.personal.toUpperCase()),
               SettingIconTextWithArrow(
                 icon: AssetRes.icEdit,
@@ -88,7 +85,6 @@ class SettingsScreen extends StatelessWidget {
                   Get.to(() => const CoinWalletScreen());
                 },
               ),
-              // قسم التوثيق
               SettingIconTextWithArrow(
                 icon: AssetRes.icBlueTick,
                 title: LKey.verifyAccount,
@@ -187,7 +183,6 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// شاشة التوثيق
 class VerificationScreen extends StatelessWidget {
   const VerificationScreen({super.key});
 
@@ -210,15 +205,12 @@ class VerificationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // عنوان
                   Text(
                     'أنواع التوثيق',
                     style: TextStyleCustom.unboundedSemiBold600(
                         fontSize: 18, color: textDarkGrey(context)),
                   ),
                   const SizedBox(height: 20),
-
-                  // التوثيق الأزرق
                   _VerifyTypeCard(
                     color: Colors.blue,
                     title: 'التوثيق الأزرق',
@@ -230,8 +222,6 @@ class VerificationScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-
-                  // التوثيق الأحمر
                   _VerifyTypeCard(
                     color: Colors.red,
                     title: 'التوثيق الأحمر',
@@ -244,8 +234,6 @@ class VerificationScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-
-                  // التوثيق الأخضر
                   _VerifyTypeCard(
                     color: Colors.green,
                     title: 'التوثيق الأخضر',
@@ -258,8 +246,6 @@ class VerificationScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 30),
-
-                  // زر التواصل مع الدعم
                   GestureDetector(
                     onTap: _contactSupport,
                     child: Container(
@@ -381,76 +367,6 @@ class _VerifyTypeCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class SubscriptionCard extends StatefulWidget {
-  final SettingsScreenController controller;
-  final Function(User? user)? onUpdateUser;
-
-  const SubscriptionCard(
-      {super.key, required this.controller, this.onUpdateUser});
-
-  @override
-  State<SubscriptionCard> createState() => _SubscriptionCardState();
-}
-
-class _SubscriptionCardState extends State<SubscriptionCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      bool isVerify = widget.controller.myUser.value?.isVerify == 1;
-      return InkWell(
-        onTap: () {
-          if (!isVerify) {
-            Get.to<bool>(
-                    () => SubscriptionScreen(onUpdateUser: widget.onUpdateUser))
-                ?.then((value) {
-              if (value == true) {
-                widget.controller.myUser.update((val) => val?.isVerify = 1);
-              }
-            });
-          }
-        },
-        child: Container(
-          height: 47,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          margin: const EdgeInsets.all(5),
-          decoration: ShapeDecoration(
-              shape: SmoothRectangleBorder(
-                  borderRadius:
-                      SmoothBorderRadius(cornerRadius: 7, cornerSmoothing: 1)),
-              gradient: StyleRes.themeGradient),
-          child: Row(
-            spacing: 11,
-            children: [
-              Image.asset(AssetRes.icPro, width: 24, height: 24),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                      text: isVerify ? LKey.youAre.tr : LKey.become.tr,
-                      style: TextStyleCustom.outFitRegular400(
-                          color: whitePure(context), fontSize: 15),
-                      children: [
-                        TextSpan(
-                            text: ' ${LKey.plus.tr} ',
-                            style: TextStyleCustom.outFitExtraBold800(
-                                color: whitePure(context), fontSize: 15)),
-                        TextSpan(
-                            text: isVerify ? LKey.member.tr : '',
-                            style: TextStyleCustom.outFitRegular400(
-                                color: whitePure(context), fontSize: 15)),
-                      ]),
-                ),
-              ),
-              if (!isVerify)
-                Image.asset(AssetRes.icForwardArrow,
-                    width: 24, height: 20, color: whitePure(context))
-            ],
-          ),
-        ),
-      );
-    });
   }
 }
 
