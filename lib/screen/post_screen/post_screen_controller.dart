@@ -1,4 +1,4 @@
-hereimport 'dart:async';
+import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:shortzz/common/controller/base_controller.dart';
@@ -30,7 +30,7 @@ class PostScreenController extends BaseController {
   bool _isSavedLoading = false;
 
   User? get myUser => SessionManager.instance.getUser();
-  Function triggerLikeAnim = () {}; // 🎯 Persisted here
+  Function triggerLikeAnim = () {};
 
   Rx<Post> postData;
   bool isFromSinglePostScreen;
@@ -64,8 +64,8 @@ class PostScreenController extends BaseController {
 
     if (model.status == true) {
       if (post?.user?.notifyPostLike == 1 && myUser?.id != post?.userId) {
-        print(post?.user?.toJson());
-        FirebaseNotificationManager.instance.sendLocalisationNotification(LKey.activityLikedPost,
+        FirebaseNotificationManager.instance.sendLocalisationNotification(
+            LKey.activityLikedPost,
             type: NotificationType.post,
             body: NotificationInfo(id: post?.id),
             deviceType: post?.user?.device ?? 0,
@@ -123,7 +123,6 @@ class PostScreenController extends BaseController {
   void handlePinUnpinPost(int isPinned) {
     if (Get.isRegistered<ProfileScreenController>(tag: ProfileScreenController.tag)) {
       final controller = Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
-
       if (isPinned == 0) {
         controller.updatePinPost(postData.value);
       } else {
@@ -133,17 +132,29 @@ class PostScreenController extends BaseController {
   }
 
   Future<void> handleShare() async {
-    Post _post = postData.value;
-    if (_post.id == null) {
-      return Loggers.error('Invalid Post ID : ${_post.id}');
+    Post post = postData.value;
+    if (post.id == null) {
+      return Loggers.error('Invalid Post ID : ${post.id}');
     }
 
-    ShareManager.shared.showCustomShareSheet(
-        post: _post,
-        keys: ShareKeys.post,
-        onShareSuccess: () {
-          postData.update((val) => val?.increaseShares(1));
-        });
+    Get.bottomSheet(
+      ConfirmationSheet(
+        title: 'إعادة النشر',
+        description: 'هل تريد إعادة نشر هذا المنشور على حسابك؟',
+        positiveText: 'إعادة النشر',
+        onTap: () async {
+          Get.back();
+          showLoader();
+          StatusModel model = await PostService.instance
+              .increaseShareCount(postId: post.id ?? -1);
+          stopLoader();
+          if (model.status == true) {
+            postData.update((val) => val?.increaseShares(1));
+            showSnackBar('تمت إعادة النشر بنجاح ✓');
+          }
+        },
+      ),
+    );
   }
 
   void handleDelete(Post post, {required bool isModerator}) async {
@@ -166,7 +177,8 @@ class PostScreenController extends BaseController {
     stopLoader();
     if (model.status == true) {
       if (Get.isRegistered<ProfileScreenController>(tag: ProfileScreenController.tag)) {
-        final controller = Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
+        final controller =
+            Get.find<ProfileScreenController>(tag: ProfileScreenController.tag);
         controller.posts.removeWhere((element) => element.id == post.id);
         postData.value = Post();
         Get.delete<PostScreenController>(tag: '${post.id}');
@@ -176,7 +188,8 @@ class PostScreenController extends BaseController {
 
   void handleReport(Post? post) {
     if (post == null) return;
-    Get.bottomSheet(ReportSheet(id: post.id, reportType: ReportType.post), isScrollControlled: true);
+    Get.bottomSheet(ReportSheet(id: post.id, reportType: ReportType.post),
+        isScrollControlled: true);
   }
 
   void notifyCommentSheet(PostByIdData? data) {
