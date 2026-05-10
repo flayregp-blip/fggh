@@ -14,6 +14,7 @@ class FullNameWithBlueTick extends StatelessWidget {
   final CrossAxisAlignment? crossAxisAlignment;
   final TextStyle? style;
   final int? isVerify;
+  final int? verifyType;
   final VoidCallback? onTap;
   final double opacity;
 
@@ -29,8 +30,75 @@ class FullNameWithBlueTick extends StatelessWidget {
       this.icon,
       this.style,
       this.isVerify = 0,
+      this.verifyType = 1,
       this.onTap,
       this.opacity = 1});
+
+  Color _getVerifyColor() {
+    switch (verifyType) {
+      case 2:
+        return Colors.red;
+      case 3:
+        return Colors.green;
+      default:
+        return Colors.blue;
+    }
+  }
+
+  String _getVerifyTitle() {
+    switch (verifyType) {
+      case 2:
+        return 'مشهور / VIP';
+      case 3:
+        return 'جهة رسمية / حكومية';
+      default:
+        return 'مستخدم موثق';
+    }
+  }
+
+  String _getVerifyDescription() {
+    switch (verifyType) {
+      case 2:
+        return 'هذا الحساب يعود لشخصية مشهورة أو VIP';
+      case 3:
+        return 'هذا الحساب يعود لجهة رسمية أو حكومية';
+      default:
+        return 'هذا الحساب تم التحقق من هويته';
+    }
+  }
+
+  void _showVerifyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.verified, color: _getVerifyColor(), size: 50),
+            const SizedBox(height: 12),
+            Text(
+              _getVerifyTitle(),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _getVerifyDescription(),
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('حسناً'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +114,8 @@ class FullNameWithBlueTick extends StatelessWidget {
               username ?? '',
               style: style ??
                   TextStyleCustom.unboundedMedium500(
-                      color: fontColor ?? textDarkGrey(context),
-                      fontSize: fontSize ?? 11,
+                    color: fontColor ?? textDarkGrey(context),
+                    fontSize: fontSize ?? 11,
                     opacity: opacity,
                   ).copyWith(height: 2),
               maxLines: 1,
@@ -56,9 +124,13 @@ class FullNameWithBlueTick extends StatelessWidget {
           ),
           if (isVerify == 1) const SizedBox(width: 3),
           if (isVerify == 1)
-            Image.asset(
-              icon ?? AssetRes.icBlueTick,
-              height: iconSize ?? 15,
+            GestureDetector(
+              onTap: () => _showVerifyDialog(context),
+              child: Icon(
+                Icons.verified,
+                size: iconSize ?? 15,
+                color: _getVerifyColor(),
+              ),
             ),
           const SizedBox(width: 6),
           if (child != null) child!
