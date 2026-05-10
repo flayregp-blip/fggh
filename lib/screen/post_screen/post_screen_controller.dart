@@ -1,4 +1,5 @@
-import 'dart:async';
+hereimport 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:shortzz/common/controller/base_controller.dart';
 import 'package:shortzz/common/extensions/common_extension.dart';
@@ -7,8 +8,11 @@ import 'package:shortzz/common/manager/firebase_notification_manager.dart';
 import 'package:shortzz/common/manager/haptic_manager.dart';
 import 'package:shortzz/common/manager/logger.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
-import 'package:shortzz/common/service/api/post_service.dart';
+import 'package:shortzz/common/manager/share_manager.dart';
 import 'package:shortzz/common/service/api/moderator_service.dart';
+import 'package:shortzz/common/service/api/post_service.dart';
+import 'package:shortzz/common/widget/confirmation_dialog.dart';
+import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/general/status_model.dart';
 import 'package:shortzz/model/post_story/post_by_id.dart';
 import 'package:shortzz/model/post_story/post_model.dart';
@@ -18,9 +22,6 @@ import 'package:shortzz/screen/comment_sheet/comment_sheet_controller.dart';
 import 'package:shortzz/screen/gift_sheet/send_gift_sheet_controller.dart';
 import 'package:shortzz/screen/profile_screen/profile_screen_controller.dart';
 import 'package:shortzz/screen/report_sheet/report_sheet.dart';
-import 'package:shortzz/utilities/theme_res.dart';
-import 'package:shortzz/languages/languages_keys.dart';
-import 'package:shortzz/common/widget/confirmation_dialog.dart';
 
 class PostScreenController extends BaseController {
   Timer? _debounce;
@@ -29,7 +30,7 @@ class PostScreenController extends BaseController {
   bool _isSavedLoading = false;
 
   User? get myUser => SessionManager.instance.getUser();
-  Function triggerLikeAnim = () {};
+  Function triggerLikeAnim = () {}; // 🎯 Persisted here
 
   Rx<Post> postData;
   bool isFromSinglePostScreen;
@@ -43,6 +44,7 @@ class PostScreenController extends BaseController {
   }
 
   void onLike(Post? post) async {
+    Loggers.success(post?.user?.appLanguage);
     if (_isLikeLoading || post == null) return;
     _isLikeLoading = true;
 
@@ -62,6 +64,7 @@ class PostScreenController extends BaseController {
 
     if (model.status == true) {
       if (post?.user?.notifyPostLike == 1 && myUser?.id != post?.userId) {
+        print(post?.user?.toJson());
         FirebaseNotificationManager.instance.sendLocalisationNotification(LKey.activityLikedPost,
             type: NotificationType.post,
             body: NotificationInfo(id: post?.id),
@@ -135,26 +138,12 @@ class PostScreenController extends BaseController {
       return Loggers.error('Invalid Post ID : ${_post.id}');
     }
 
-    // One-tap Repost logic: No Share Sheet, direct repost to user's profile
-    showLoader();
-    try {
-      StatusModel model = await PostService.instance.increaseShareCount(postId: _post.id ?? -1);
-      stopLoader();
-      
-      if (model.status == true) {
-        // Update the shares count immediately
-        postData.update((val) => val?.increaseShares(1));
-        
-        // Show success toast notification
-        showSnackBar('تمت إعادة النشر بنجاح ✓');
-      } else {
-        showSnackBar('فشل إعادة النشر. حاول مجددًا');
-      }
-    } catch (e) {
-      stopLoader();
-      showSnackBar('حدث خطأ أثناء إعادة النشر');
-      Loggers.error('Error in handleShare: $e');
-    }
+    ShareManager.shared.showCustomShareSheet(
+        post: _post,
+        keys: ShareKeys.post,
+        onShareSuccess: () {
+          postData.update((val) => val?.increaseShares(1));
+        });
   }
 
   void handleDelete(Post post, {required bool isModerator}) async {
