@@ -588,5 +588,6 @@ class LKey {
   static const String yourProfileIsAlreadyInUseForDummyEtc =
       "Your Profile is already in use for Dummy Live from admin panel. So you can't start livestreaming now.";
   static const String shareProfile = "Share Profile";
+  static const String verifyAccount = 'Account Verification';
   static const String noPost = "No Post";
 }
