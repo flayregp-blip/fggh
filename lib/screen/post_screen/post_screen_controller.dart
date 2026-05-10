@@ -132,29 +132,17 @@ class PostScreenController extends BaseController {
   }
 
   Future<void> handleShare() async {
-    Post post = postData.value;
-    if (post.id == null) {
-      return Loggers.error('Invalid Post ID : ${post.id}');
+    Post _post = postData.value;
+    if (_post.id == null) {
+      return Loggers.error('Invalid Post ID : ${_post.id}');
     }
 
-    Get.bottomSheet(
-      ConfirmationSheet(
-        title: 'إعادة النشر',
-        description: 'هل تريد إعادة نشر هذا المنشور على حسابك؟',
-        positiveText: 'إعادة النشر',
-        onTap: () async {
-          Get.back();
-          showLoader();
-          StatusModel model = await PostService.instance
-              .increaseShareCount(postId: post.id ?? -1);
-          stopLoader();
-          if (model.status == true) {
-            postData.update((val) => val?.increaseShares(1));
-            showSnackBar('تمت إعادة النشر بنجاح ✓');
-          }
-        },
-      ),
-    );
+    ShareManager.shared.showCustomShareSheet(
+        post: _post,
+        keys: ShareKeys.post,
+        onShareSuccess: () {
+          postData.update((val) => val?.increaseShares(1));
+        });
   }
 
   void handleDelete(Post post, {required bool isModerator}) async {
