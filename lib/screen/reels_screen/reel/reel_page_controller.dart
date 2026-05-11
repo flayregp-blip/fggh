@@ -29,6 +29,7 @@ class ReelController extends BaseController {
   Rx<Post> reelData;
   bool isLikeLoading = false;
   bool isSavedLoading = false;
+  bool _hasCountedView = false;
 
   User? get myUser => SessionManager.instance.getUser();
   Timer? _debounce;
@@ -68,6 +69,15 @@ class ReelController extends BaseController {
     }
   }
 
+  void increaseViews() {
+    if (_hasCountedView) return;
+    _hasCountedView = true;
+    int reelId = reelData.value.id?.toInt() ?? -1;
+    if (reelId == -1) return;
+    PostService.instance.increaseViewsCount(postId: reelId);
+    reelData.update((val) => val?.increaseViews());
+  }
+
   void onLikeTap() {
     if (reelData.value.isLiked == false) {
       HapticManager.shared.light();
@@ -86,7 +96,9 @@ class ReelController extends BaseController {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 700), () async {
       try {
-        await (reelData.value.isLiked == true ? _likePostApi(reelId) : _disLikePostApi(reelId));
+        await (reelData.value.isLiked == true
+            ? _likePostApi(reelId)
+            : _disLikePostApi(reelId));
       } catch (e) {
         Loggers.error('ERROR IN LIKE  REEL $e');
       }
@@ -98,7 +110,8 @@ class ReelController extends BaseController {
     if (result.status == true) {
       Post? reel = reelData.value;
       if (reel.user?.notifyPostLike == 1 && myUser?.id != reel.userId) {
-        FirebaseNotificationManager.instance.sendLocalisationNotification(LKey.activityLikedPost,
+        FirebaseNotificationManager.instance.sendLocalisationNotification(
+            LKey.activityLikedPost,
             type: NotificationType.post,
             body: NotificationInfo(id: reel.id),
             deviceType: reel.user?.device ?? 0,
@@ -112,9 +125,9 @@ class ReelController extends BaseController {
     await PostService.instance.disLikePost(postId: id);
   }
 
-  Future<void> onCommentTap({PostByIdData? postByIdData, bool isFromNotification = false}) async {
+  Future<void> onCommentTap(
+      {PostByIdData? postByIdData, bool isFromNotification = false}) async {
     FocusManager.instance.primaryFocus?.unfocus();
-    print("Ahiya avu");
     await Get.bottomSheet(
         CommentSheet(
           replyComment: postByIdData?.reply,
@@ -146,7 +159,9 @@ class ReelController extends BaseController {
       if (reelData.value.id == null) {
         return Loggers.error('Reel value not found');
       }
-      await ((reelData.value.isSaved ?? false) ? _savePostApi(reelId) : _unSavePostApi(reelId));
+      await ((reelData.value.isSaved ?? false)
+          ? _savePostApi(reelId)
+          : _unSavePostApi(reelId));
       isSavedLoading = false;
     });
   }
@@ -201,8 +216,10 @@ class ReelController extends BaseController {
   void onUserTap(User? user) {
     if (reelData.value.id == -1) return;
     late ReelsScreenController reelsScreenController;
-    if (Get.isRegistered<ReelsScreenController>(tag: ReelsScreenController.tag)) {
-      reelsScreenController = Get.find<ReelsScreenController>(tag: ReelsScreenController.tag);
+    if (Get.isRegistered<ReelsScreenController>(
+        tag: ReelsScreenController.tag)) {
+      reelsScreenController =
+          Get.find<ReelsScreenController>(tag: ReelsScreenController.tag);
       reelsScreenController.isCurrentPageVisible = false;
     }
     NavigationService.shared.openProfileScreen(user, onUserUpdate: (user) async {
