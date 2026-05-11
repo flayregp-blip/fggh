@@ -15,9 +15,6 @@ import 'package:shortzz/utilities/theme_res.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// ---------------------------------------------------------------
-// REEL PAGE
-// ---------------------------------------------------------------
 class ReelPage extends StatefulWidget {
   final VideoPlayerController? videoPlayerController;
   final Post reelData;
@@ -80,6 +77,7 @@ class _ReelPageState extends State<ReelPage> {
       if (!controller!.value.isPlaying) {
         controller.play();
         isPlaying.value = true;
+        reelController.increaseViews();
       }
     } else {
       if (controller!.value.isPlaying) {
@@ -93,7 +91,7 @@ class _ReelPageState extends State<ReelPage> {
     try {
       return c != null && c.value.isInitialized;
     } catch (_) {
-      return false; // controller disposed
+      return false;
     }
   }
 
@@ -125,13 +123,10 @@ class _ReelPageState extends State<ReelPage> {
           children: [
             widget.videoPlayerController != null
                 ? CustomCacheVideoPlayer(
-                    videoPlayer: widget.videoPlayerController, onPlayPause: onPlayPause)
+                    videoPlayer: widget.videoPlayerController,
+                    onPlayPause: onPlayPause)
                 : const SizedBox(),
-
-            /// 🕹 Tap Overlay (pause/play)
             InkWell(onTap: onPlayPause, child: const BlackGradientShadow()),
-
-            /// ▶ Play/Pause Icon overlay
             if (widget.videoPlayerController != null)
               Obx(() {
                 return AnimatedOpacity(
@@ -149,22 +144,21 @@ class _ReelPageState extends State<ReelPage> {
                           shape: BoxShape.circle,
                         ),
                         alignment: const Alignment(0.25, 0),
-                        child: Image.asset(isPlaying.value ? AssetRes.icPause : AssetRes.icPlay,
-                            width: 45, height: 45, color: bgGrey(context)),
+                        child: Image.asset(
+                            isPlaying.value ? AssetRes.icPause : AssetRes.icPlay,
+                            width: 45,
+                            height: 45,
+                            color: bgGrey(context)),
                       ),
                     ),
                   ),
                 );
               }),
-
-            /// ℹ️ Reel Info Section
             ReelInfoSection(
               controller: reelController,
               likeKey: widget.likeKey,
               videoPlayerPlusController: widget.videoPlayerController,
             ),
-
-            /// 💖 Like Animation
             Obx(() {
               if (details.value == null) return const SizedBox();
               return ReelAnimationLike(
@@ -204,7 +198,9 @@ class ReelInfoSection extends StatelessWidget {
       children: [
         ReelInfoRow(controller: controller, likeKey: likeKey),
         if (videoPlayerPlusController != null)
-          ReelSeekBar(videoController: videoPlayerPlusController, controller: controller)
+          ReelSeekBar(
+              videoController: videoPlayerPlusController,
+              controller: controller)
         else
           const SizedBox(height: 15),
       ],
@@ -216,7 +212,8 @@ class ReelInfoRow extends StatelessWidget {
   final ReelController controller;
   final GlobalKey likeKey;
 
-  const ReelInfoRow({super.key, required this.controller, required this.likeKey});
+  const ReelInfoRow(
+      {super.key, required this.controller, required this.likeKey});
 
   @override
   Widget build(BuildContext context) {
@@ -234,13 +231,15 @@ class CustomCacheVideoPlayer extends StatelessWidget {
   final VideoPlayerController? videoPlayer;
   final VoidCallback onPlayPause;
 
-  const CustomCacheVideoPlayer({super.key, required this.videoPlayer, required this.onPlayPause});
+  const CustomCacheVideoPlayer(
+      {super.key, required this.videoPlayer, required this.onPlayPause});
 
   @override
   Widget build(BuildContext context) {
     if (videoPlayer != null && videoPlayer?.value.isInitialized == true) {
       final videoSize = (videoPlayer?.value.size)!;
-      final fitType = videoSize.width < videoSize.height ? BoxFit.cover : BoxFit.fitWidth;
+      final fitType =
+          videoSize.width < videoSize.height ? BoxFit.cover : BoxFit.fitWidth;
       return InkWell(
           onTap: onPlayPause,
           child: Container(
