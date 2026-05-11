@@ -18,74 +18,67 @@ class FullNameWithBlueTick extends StatelessWidget {
   final VoidCallback? onTap;
   final double opacity;
 
-  const FullNameWithBlueTick(
-      {super.key,
-      required this.username,
-      this.child,
-      this.iconSize,
-      this.fontSize,
-      this.fontColor,
-      this.mainAxisAlignment,
-      this.crossAxisAlignment,
-      this.icon,
-      this.style,
-      this.isVerify = 0,
-      this.verifyType = 1,
-      this.onTap,
-      this.opacity = 1});
+  const FullNameWithBlueTick({
+    super.key,
+    required this.username,
+    this.child,
+    this.iconSize,
+    this.fontSize,
+    this.fontColor,
+    this.mainAxisAlignment,
+    this.crossAxisAlignment,
+    this.icon,
+    this.style,
+    this.isVerify = 0,
+    this.verifyType = 1,
+    this.onTap,
+    this.opacity = 1,
+  });
 
+  // ✅ العلامة كلها أصبحت زرقاء
   Color _getVerifyColor() {
-    switch (verifyType) {
-      case 2:
-        return Colors.red;
-      case 3:
-        return Colors.green;
-      default:
-        return Colors.blue;
-    }
+    return Colors.blue;
   }
 
   String _getVerifyTitle() {
-    switch (verifyType) {
-      case 2:
-        return 'مشهور / VIP';
-      case 3:
-        return 'جهة رسمية / حكومية';
-      default:
-        return 'مستخدم موثق';
-    }
+    return 'مستخدم موثق';
   }
 
   String _getVerifyDescription() {
-    switch (verifyType) {
-      case 2:
-        return 'هذا الحساب يعود لشخصية مشهورة أو VIP';
-      case 3:
-        return 'هذا الحساب يعود لجهة رسمية أو حكومية';
-      default:
-        return 'هذا الحساب تم التحقق من هويته';
-    }
+    return 'هذا الحساب تم التحقق من هويته';
   }
 
   void _showVerifyDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.verified, color: _getVerifyColor(), size: 50),
+            Icon(
+              Icons.verified,
+              color: _getVerifyColor(),
+              size: 50,
+            ),
             const SizedBox(height: 12),
             Text(
               _getVerifyTitle(),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               _getVerifyDescription(),
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.grey,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -105,8 +98,10 @@ class FullNameWithBlueTick extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Row(
-        mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.start,
-        crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.center,
+        mainAxisAlignment:
+            mainAxisAlignment ?? MainAxisAlignment.start,
+        crossAxisAlignment:
+            crossAxisAlignment ?? CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
@@ -122,7 +117,10 @@ class FullNameWithBlueTick extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (isVerify == 1) const SizedBox(width: 3),
+
+          if (isVerify == 1)
+            const SizedBox(width: 3),
+
           if (isVerify == 1)
             GestureDetector(
               onTap: () => _showVerifyDialog(context),
@@ -132,8 +130,11 @@ class FullNameWithBlueTick extends StatelessWidget {
                 color: _getVerifyColor(),
               ),
             ),
+
           const SizedBox(width: 6),
-          if (child != null) child!
+
+          if (child != null)
+            child!,
         ],
       ),
     );
