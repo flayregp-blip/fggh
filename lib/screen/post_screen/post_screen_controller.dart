@@ -28,6 +28,8 @@ class PostScreenController extends BaseController {
 
   bool _isLikeLoading = false;
   bool _isSavedLoading = false;
+  bool _isViewLoading = false;
+  bool _hasCountedView = false;
 
   User? get myUser => SessionManager.instance.getUser();
   Function triggerLikeAnim = () {}; // 🎯 Persisted here
@@ -41,6 +43,32 @@ class PostScreenController extends BaseController {
     postData.update((val) {
       val = post;
     });
+  }
+
+  void onPostVisible(Post? post) {
+    if (_hasCountedView || _isViewLoading || post?.id == null) return;
+
+    // Reels already have their own visibility/video playback view counter.
+    if (post!.postType == PostType.reel) return;
+
+    _hasCountedView = true;
+    _increaseViewsCount(post);
+  }
+
+  Future<void> _increaseViewsCount(Post post) async {
+    _isViewLoading = true;
+    try {
+      StatusModel model =
+          await PostService.instance.increaseViewsCount(postId: post.id ?? -1);
+      if (model.status == true) {
+        postData.update((val) => val?.increaseViews());
+      }
+    } catch (e) {
+      _hasCountedView = false;
+      Loggers.error('Failed to increase post views: $e');
+    } finally {
+      _isViewLoading = false;
+    }
   }
 
   void onLike(Post? post) async {
