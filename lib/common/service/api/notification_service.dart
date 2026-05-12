@@ -78,6 +78,13 @@ class NotificationService {
     };
     if (!isIOS) {
       messageData["notification"] = {"body": body, "title": title};
+      messageData["android"] = {
+        "priority": "HIGH",
+        "notification": {
+          "channel_id": FirebaseNotificationManager.androidNotificationChannelId,
+          "sound": "default"
+        }
+      };
     }
     if (token != null) {
       messageData["token"] = token;

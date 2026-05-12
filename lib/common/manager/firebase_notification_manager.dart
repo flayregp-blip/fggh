@@ -49,35 +49,49 @@ class FirebaseNotificationManager {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   RxString notificationPayload = ''.obs;
+  static const String androidNotificationChannelId = 'flayr_notifications';
+  static const String androidNotificationChannelName = 'Flayr Notifications';
+  static const String androidNotificationChannelDescription =
+      'Important notifications for chats, posts, followers, and live streams.';
+
   AndroidNotificationChannel channel = const AndroidNotificationChannel(
-      'shortzz', // id
-      'Shortzz', // title
-      playSound: true,
-      enableLights: true,
-      enableVibration: true,
-      showBadge: false,
-      importance: Importance.max);
+    androidNotificationChannelId,
+    androidNotificationChannelName,
+    description: androidNotificationChannelDescription,
+    playSound: true,
+    enableLights: true,
+    enableVibration: true,
+    showBadge: true,
+    importance: Importance.max,
+  );
 
   String? notificationId;
 
   void init() async {
+    await firebaseMessaging.requestPermission(alert: true, badge: true, sound: true);
+    await firebaseMessaging.setForegroundNotificationPresentationOptions(
+        alert: true, badge: true, sound: true);
+
     if (Platform.isAndroid) {
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
           ?.requestNotificationsPermission();
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
     } else {
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(alert: true, sound: true);
-      await firebaseMessaging.requestPermission(alert: true, badge: false, sound: true);
+          ?.requestPermissions(alert: true, badge: true, sound: true);
     }
 
     subscribeToTopic();
+    _listenToTokenRefresh();
 
     var initializationSettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
 
     var initializationSettingsIOS = const DarwinInitializationSettings(
-        defaultPresentAlert: true, defaultPresentSound: true, defaultPresentBadge: false);
+        defaultPresentAlert: true, defaultPresentSound: true, defaultPresentBadge: true);
 
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
@@ -118,9 +132,12 @@ class FirebaseNotificationManager {
       }
     });
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null && initialMessage.data.isNotEmpty) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        handleNotification(jsonEncode(initialMessage.toMap()));
+      });
+    }
   }
 
   void unsubscribeToTopic({String? topic}) async {
@@ -156,8 +173,18 @@ class FirebaseNotificationManager {
         (message.data['body'] as String?) ?? message.notification?.body,
         NotificationDetails(
             iOS: const DarwinNotificationDetails(
-                presentSound: true, presentAlert: true, presentBadge: false),
-            android: AndroidNotificationDetails(channel.id, channel.name)),
+                presentSound: true, presentAlert: true, presentBadge: true),
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              importance: Importance.max,
+              priority: Priority.high,
+              playSound: true,
+              enableVibration: true,
+              icon: '@mipmap/ic_launcher',
+              visibility: NotificationVisibility.public,
+            )),
         payload: jsonEncode(message.toMap()));
   }
 
@@ -259,6 +286,20 @@ class FirebaseNotificationManager {
       Loggers.error('DeviceToken Exception $e');
       return null;
     }
+  }
+
+  void _listenToTokenRefresh() {
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+      Loggers.info('DeviceToken refreshed $token');
+      final bool isLoggedIn = SessionManager.instance.isLogin();
+      if (!isLoggedIn || token.isEmpty) return;
+
+      try {
+        await UserService.instance.updateUserDetails(deviceToken: token);
+      } catch (e) {
+        Loggers.error('DeviceToken refresh update failed $e');
+      }
+    });
   }
 
   Future<void> sendLocalisationNotification(
