@@ -65,6 +65,7 @@ class CommentCard extends StatelessWidget {
                       },
                       username: comment?.user?.username ?? '',
                       isVerify: comment?.user?.isVerify,
+                      verifyType: comment?.user?.verifyType,
                       child: Text(
                           '${comment?.createdAt?.timeAgo ?? ''}${comment?.isPinned == 1 ? AppRes.postPinIcon : ''}',
                           style: TextStyleCustom.outFitLight300(
@@ -118,7 +119,6 @@ class CommentCard extends StatelessWidget {
                             }
                           },
                           child: Container(
-                            // color: Colors.red,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: Column(
                               children: [
@@ -163,7 +163,9 @@ class CommentCard extends StatelessWidget {
             children: [
               if (comment?.reply == null)
                 MenuAction(
-                    title: comment?.isPinned == 1 ? LKey.unpin.tr : LKey.pin.tr,
+                    title: comment?.isPinned == 1
+                        ? LKey.unpin.tr
+                        : LKey.pin.tr,
                     callback: () {
                       if (comment?.isPinned == 1) {
                         controller.onUnPinComment(comment!);
