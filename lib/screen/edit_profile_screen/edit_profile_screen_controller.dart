@@ -24,7 +24,7 @@ class EditProfileScreenController extends BaseController {
   RxList<Link> links = <Link>[].obs;
   Rx<User?> userData = Rx(null);
   Rx<XFile?> fileProfileImage = Rx(null);
-  Map<String, bool> usernameCache = {}; // Cache for username availability
+  Map<String, bool> usernameCache = {};
   Timer? _debounce;
   RxBool isValidUserName = true.obs;
   TextEditingController fullNameController = TextEditingController();
@@ -66,7 +66,6 @@ class EditProfileScreenController extends BaseController {
   }
 
   void onChangeProfileImage() async {
-    // Pick an profile image.
     try {
       final XFile? image =
           await MediaPickerHelper.shared.pickImage(source: ImageSource.gallery);
@@ -122,26 +121,30 @@ class EditProfileScreenController extends BaseController {
   }
 
   void checkUsernameAvailability(String value) {
-    final username = value.trim(); // Use passed value and trim it once
+    final username = value.trim();
 
-    // Validate for spaces
+    // ✅ منع الحروف العربية
+    if (RegExp(r'[\u0600-\u06FF]').hasMatch(username)) {
+      isValidUserName.value = false;
+      return;
+    }
+
+    // منع المسافات
     if (username.contains(' ')) {
       isValidUserName.value = false;
       return;
     }
 
-    // Check cache first
     if (usernameCache.containsKey(username)) {
       isValidUserName.value = usernameCache[username]!;
       return;
     }
 
-    // Check against the current user's username
     final currentUser = SessionManager.instance.getUser()?.username;
     if (username.isNotEmpty &&
         currentUser?.toLowerCase() == username.toLowerCase()) {
       isValidUserName.value = true;
-      usernameCache[username] = true; // Cache the result
+      usernameCache[username] = true;
       return;
     }
     if (!GetUtils.isUsername(username)) {
@@ -149,14 +152,13 @@ class EditProfileScreenController extends BaseController {
       return;
     }
 
-    // Handle debounce
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       final model = await UserService.instance
           .checkUsernameAvailability(userName: username);
       final isAvailable = model.status ?? true;
       isValidUserName.value = isAvailable;
-      usernameCache[username] = isAvailable; // Cache the result
+      usernameCache[username] = isAvailable;
     });
   }
 
@@ -198,7 +200,6 @@ class EditProfileScreenController extends BaseController {
                 if (value.status ?? false) {
                   onLinkAddEditDelete(link, LinkType.delete);
                 }
-                // ApiService
               },
             ),
             isScrollControlled: true);
