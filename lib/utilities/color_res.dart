@@ -1,99 +1,48 @@
 import 'package:flutter/material.dart';
 
 class ColorRes {
-
-  // =========================
-  // Base Colors
-  // =========================
-
-  static const Color blackPure      = Color(0xFF0F1115);
+  static const Color blackPure      = Color(0xFF1A1A1A);
   static const Color whitePure      = Color(0xFFFFFFFF);
-
-  // =========================
-  // Backgrounds
-  // =========================
-
-  static const Color bgDeep         = Color(0xFFF5F7FC);
-  static const Color bgLightGrey    = Color(0xFFF8F9FD);
-  static const Color bgGrey         = Color(0xFFF1F3F9);
-  static const Color bgMediumGrey   = Color(0xFFE9ECF5);
-
-  // Main App Theme
+  static const Color bgDeep         = Color(0xFFF2F2F2);
   static const Color themeColor     = Color(0xFFFFFFFF);
+  static const Color themeGradient2 = Color(0xFFF8F8F8);
+  static const Color themeGradient1 = Color(0xFFEFEFEF);
+  static const Color themeAccentSolid = Color(0xFFE8E8E8);
+  static const Color borderSubtle   = Color(0xFFE0E0E0);
+  static const Color borderMedium   = Color(0xFFCCCCCC);
+  static const Color textPrimary    = Color(0xFF1A1A1A);
+  static const Color textSecondary  = Color(0xFF555555);
+  static const Color textMuted      = Color(0xFF999999);
+  static const Color textDarkGrey   = Color(0xFF2A2A2A);
+  static const Color textLightGrey  = Color(0xFF888888);
 
-  // Soft Modern Gradient
-  static const Color themeGradient1 = Color(0xFFF8F6FF);
-  static const Color themeGradient2 = Color(0xFFEFF4FF);
+  // ─── Primary Accent — Green ─────────────────────────
+  static const Color orange         = Color(0xFF2DBD6E);
+  static const Color orangeLight    = Color(0xFF4DD987);
+  static const Color orangeDim      = Color(0x202DBD6E);
 
-  // Cards / Containers
-  static const Color themeAccentSolid = Color(0xFFFFFFFF);
+  // ─── Secondary ──────────────────────────────────────
+  static const Color blueFollow     = Color(0xFF25A85A);
+  static const Color blueLight      = Color(0xFF5ACC8A);
+  static const Color blueDim        = Color(0x2025A85A);
 
-  // =========================
-  // Borders
-  // =========================
+  // ─── Battle / Live ───────────────────────────────────
+  static const Color battleProgressColor = Color(0xFF2DBD6E);
+  static const Color battleDim      = Color(0x202DBD6E);
 
-  static const Color borderSubtle   = Color(0xFFE7EAF3);
-  static const Color borderMedium   = Color(0xFFD7DCE8);
+  // ─── Success / Green ────────────────────────────────
+  static const Color green          = Color(0xFF2DBD6E);
+  static const Color green1         = Color(0xFF4DD987);
+  static const Color greenDim       = Color(0x204DD987);
 
-  // =========================
-  // Text Colors
-  // =========================
+  // ─── Error / Like / Red ─────────────────────────────
+  static const Color likeRed        = Color(0xFFFF5252);
+  static const Color textStoryBgGradient2 = Color(0xFFFF3B3B);
+  static const Color redDim         = Color(0x20FF5252);
 
-  static const Color textPrimary    = Color(0xFF16181D);
-  static const Color textSecondary  = Color(0xFF6E7485);
-  static const Color textMuted      = Color(0xFFA3A9B8);
-
-  static const Color textDarkGrey   = Color(0xFF2B2F3A);
-  static const Color textLightGrey  = Color(0xFF8E96A8);
-
-  // =========================
-  // Brand Main Color
-  // Purple Premium
-  // =========================
-
-  static const Color orange         = Color(0xFF7C4DFF);
-  static const Color orangeLight    = Color(0xFFA98BFF);
-  static const Color orangeDim      = Color(0x1F7C4DFF);
-
-  // =========================
-  // Social Accent Pink
-  // =========================
-
-  static const Color blueFollow     = Color(0xFFFF4D8D);
-  static const Color blueLight      = Color(0xFFFF92BB);
-  static const Color blueDim        = Color(0x1FFF4D8D);
-
-  // =========================
-  // Live / Battle / Trending
-  // =========================
-
-  static const Color battleProgressColor = Color(0xFF00CFFF);
-  static const Color battleDim      = Color(0x2200CFFF);
-
-  // =========================
-  // Success
-  // =========================
-
-  static const Color green          = Color(0xFF19C37D);
-  static const Color green1         = Color(0xFF52E0A5);
-  static const Color greenDim       = Color(0x2219C37D);
-
-  // =========================
-  // Likes / Hearts
-  // =========================
-
-  static const Color likeRed        = Color(0xFFFF3D71);
-  static const Color redDim         = Color(0x1FFF3D71);
-
-  // =========================
-  // Story Gradient
-  // =========================
-
-  static const Color textStoryBgGradient2 = Color(0xFFFF2E74);
-
-  // =========================
-  // Disabled
-  // =========================
-
-  static const Color disabledGrey   = Color(0xFFC4C9D6);
+  // ─── Surfaces ───────────────────────────────────────
+  static const Color bgLightGrey    = Color(0xFFF5F5F5);
+  static const Color bgGrey         = Color(0xFFE8E8E8);
+  static const Color bgMediumGrey   = Color(0xFFF0F0F0);
+  static const Color disabledGrey   = Color(0xFFBBBBBB);
 }
