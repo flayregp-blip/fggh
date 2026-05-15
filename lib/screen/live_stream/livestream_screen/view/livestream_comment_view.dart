@@ -1,4 +1,4 @@
-hereimport 'package:figma_squircle_updated/figma_squircle.dart';
+import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shortzz/common/extensions/common_extension.dart';
