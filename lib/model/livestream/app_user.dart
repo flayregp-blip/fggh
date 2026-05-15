@@ -1,9 +1,10 @@
-class AppUser {
+hereclass AppUser {
   int? userId;
   String? username;
   String? fullname;
   String? profile;
   int? isVerify;
+  int? verifyType;
   String? identity;
 
   AppUser(
@@ -12,6 +13,7 @@ class AppUser {
       this.fullname,
       this.profile,
       this.isVerify,
+      this.verifyType,
       this.identity});
 
   AppUser.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class AppUser {
     fullname = json['fullname'];
     profile = json['profile'];
     isVerify = json['is_verify'];
+    verifyType = json['verify_type'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,8 +34,7 @@ class AppUser {
     data['fullname'] = fullname;
     data['profile'] = profile;
     data['is_verify'] = isVerify;
+    data['verify_type'] = verifyType;
     return data;
   }
 }
-
-
