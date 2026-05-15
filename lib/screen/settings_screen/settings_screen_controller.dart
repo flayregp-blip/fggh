@@ -11,11 +11,11 @@ import 'package:shortzz/common/widget/confirmation_dialog.dart';
 import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/general/settings_model.dart';
 import 'package:shortzz/model/general/status_model.dart';
-import 'package:shortzz/model/user_model/user_model.dart';
+import 'package:shortzz/model/user_model/user_model.dart' as userModel;
 import 'package:shortzz/screen/auth_screen/login_screen.dart';
 
 class SettingsScreenController extends BaseController {
-  Rx<User?> myUser = Rx<User?>(null);
+  Rx<userModel.User?> myUser = Rx<userModel.User?>(null);
   Rx<Setting?> settings = Rx<Setting?>(null);
   Rx<WhoCanSeePost> selectedWhoCanSeePost = WhoCanSeePost.values.first.obs;
   RxBool isUpdateApiCalled = false.obs;
@@ -41,7 +41,7 @@ class SettingsScreenController extends BaseController {
     final user = SessionManager.instance.getUser();
     final config = CrispConfig(
       websiteID: "fab1745c-95fa-46d7-800f-16048cefe56d",
-      user: CrispUser(
+      user: User(
         email: user?.identity ?? '',
         nickName: user?.fullname ?? '',
         avatar: user?.profilePhoto ?? '',
