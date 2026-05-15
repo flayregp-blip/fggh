@@ -1,4 +1,4 @@
-hereimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class ColorRes {
   static const Color blackPure      = Color(0xFF000000);
