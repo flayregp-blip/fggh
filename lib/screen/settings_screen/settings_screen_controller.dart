@@ -41,9 +41,9 @@ class SettingsScreenController extends BaseController {
     final user = SessionManager.instance.getUser();
     final config = CrispConfig(
       websiteID: "fab1745c-95fa-46d7-800f-16048cefe56d",
-      user: User(
+      user: CrispUser(
         email: user?.identity ?? '',
-        nickName: user?.fullName ?? '',
+        nickName: user?.fullname ?? '',
         avatar: user?.profilePhoto ?? '',
       ),
     );
