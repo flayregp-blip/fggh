@@ -147,6 +147,13 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
               SettingLabel(title: LKey.general.toUpperCase()),
+              // زرار تواصل مع الدعم
+              SettingIconTextWithArrow(
+                icon: AssetRes.icMessage,
+                title: 'تواصل مع الدعم',
+                onTap: controller.onOpenSupportChat,
+                widget: const SizedBox(),
+              ),
               SettingIconTextWithArrow(
                 icon: AssetRes.icReport,
                 title: LKey.termsOfUse,
