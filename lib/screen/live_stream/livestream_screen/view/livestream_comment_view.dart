@@ -1,4 +1,4 @@
-import 'package:figma_squircle_updated/figma_squircle.dart';
+hereimport 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shortzz/common/extensions/common_extension.dart';
@@ -70,6 +70,7 @@ class LiveStreamCommentView extends StatelessWidget {
                           FullNameWithBlueTick(
                             username: senderUser?.username,
                             isVerify: senderUser?.isVerify,
+                            verifyType: senderUser?.verifyType,
                             fontColor: whitePure(context),
                             opacity: 0.7,
                             fontSize: 12,
