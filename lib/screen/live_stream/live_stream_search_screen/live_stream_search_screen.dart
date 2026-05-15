@@ -122,7 +122,7 @@ class LiveStreamListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget _buildBlurredBackground(AppUser? hostUser) {
+    Widget buildBlurredBackground(AppUser? hostUser) {
       return Stack(
         children: [
           CustomImage(
@@ -141,7 +141,7 @@ class LiveStreamListView extends StatelessWidget {
       );
     }
 
-    Widget _buildImageContain({List<AppUser> allUsers = const [], int userCount = 0, bool isBattleOn = false}) {
+    Widget buildImageContain({List<AppUser> allUsers = const [], int userCount = 0, bool isBattleOn = false}) {
       if (allUsers.isEmpty) return const SizedBox();
 
       return Container(
@@ -323,7 +323,7 @@ class LiveStreamListView extends StatelessWidget {
           });
     }
 
-    Widget _buildUserInfo(AppUser? hostUser, int watchingCount) {
+    Widget buildUserInfo(AppUser? hostUser, int watchingCount) {
       return Column(
         spacing: 5,
         children: [
@@ -338,6 +338,7 @@ class LiveStreamListView extends StatelessWidget {
               child: FullNameWithBlueTick(
                   username: hostUser.username,
                   isVerify: hostUser.isVerify,
+                  verifyType: hostUser.verifyType,
                   iconSize: 16,
                   icon: AssetRes.icVerifiedWhite,
                   style: TextStyleCustom.outFitMedium500(color: whitePure(context), fontSize: 15)),
@@ -350,7 +351,7 @@ class LiveStreamListView extends StatelessWidget {
       );
     }
 
-    Widget _buildDescription(Livestream stream) {
+    Widget buildDescription(Livestream stream) {
       return Flexible(
           child: Text(stream.description ?? '',
               style: TextStyleCustom.outFitSemiBold600(color: whitePure(context), fontSize: 19),
@@ -358,10 +359,9 @@ class LiveStreamListView extends StatelessWidget {
               overflow: TextOverflow.ellipsis));
     }
 
-    Widget _buildGridItem(Livestream stream) {
+    Widget buildGridItem(Livestream stream) {
       return Obx(() {
         AppUser? hostUser = stream.getHostUser(controller.firebaseFirestoreController.users);
-
         List<AppUser> allUsers = stream.getAllUsers(controller.firebaseFirestoreController.users);
         bool isBattleOn = stream.type == LivestreamType.battle;
         int userCount = allUsers.length;
@@ -370,16 +370,16 @@ class LiveStreamListView extends StatelessWidget {
 
         return Stack(
           children: [
-            _buildBlurredBackground(hostUser),
+            buildBlurredBackground(hostUser),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildImageContain(allUsers: allUsers, isBattleOn: isBattleOn, userCount: userCount),
-                  _buildUserInfo(hostUser, watchingCount),
-                  _buildDescription(stream),
+                  buildImageContain(allUsers: allUsers, isBattleOn: isBattleOn, userCount: userCount),
+                  buildUserInfo(hostUser, watchingCount),
+                  buildDescription(stream),
                 ],
               ),
             ),
@@ -404,7 +404,7 @@ class LiveStreamListView extends StatelessWidget {
                         crossAxisCount: 2, crossAxisSpacing: 1, mainAxisSpacing: 1, mainAxisExtent: 310),
                     itemBuilder: (context, index) {
                       Livestream stream = controller.livestreamFilterList[index];
-                      return InkWell(onTap: () => controller.onLiveUserTap(stream), child: _buildGridItem(stream));
+                      return InkWell(onTap: () => controller.onLiveUserTap(stream), child: buildGridItem(stream));
                     },
                   ),
                 );
