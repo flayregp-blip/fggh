@@ -118,6 +118,7 @@ class SearchScreen extends StatelessWidget {
                   getProfilePhoto: (p0) => p0.profilePhoto ?? '',
                   getUserName: (p0) => p0.username ?? '',
                   getVerified: (p0) => p0.isVerify ?? 0,
+                  getVerifyType: (p0) => p0.verifyType ?? 1,
                 ),
                 ImageTextListTile(
                   items: controller.hashtags,
