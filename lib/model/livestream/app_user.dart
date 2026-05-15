@@ -1,4 +1,6 @@
-hereclass AppUser {
+hereimport 'package:flutter/material.dart';
+
+class AppUser {
   int? userId;
   String? username;
   String? fullname;
