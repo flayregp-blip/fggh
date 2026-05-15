@@ -1,3 +1,4 @@
+import 'package:crisp_chat/crisp_chat.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -33,14 +34,24 @@ class SettingsScreenController extends BaseController {
     } else {
       selectedWhoCanSeePost.value = WhoCanSeePost.values[1];
     }
-
-    // For refresh user data only
     UserService.instance.fetchUserDetails();
+  }
+
+  void onOpenSupportChat() async {
+    final user = SessionManager.instance.getUser();
+    final config = CrispConfig(
+      websiteID: "fab1745c-95fa-46d7-800f-16048cefe56d",
+      user: User(
+        email: user?.identity ?? '',
+        nickName: user?.fullName ?? '',
+        avatar: user?.profilePhoto ?? '',
+      ),
+    );
+    await FlutterCrispChat.openCrispChat(config: config);
   }
 
   void onChangedWhoCanSeePost(WhoCanSeePost? value) async {
     isUpdateApiCalled.value = true;
-
     selectedWhoCanSeePost.value = value ?? WhoCanSeePost.values.first;
     await UserService.instance.updateUserDetails(whoCanSeePost: value?.value);
     isUpdateApiCalled.value = false;
@@ -65,7 +76,6 @@ class SettingsScreenController extends BaseController {
         showMyFollowing:
             settingToggle == SettingToggle.showMyFollowings ? value : null);
     isUpdateApiCalled.value = false;
-    // For update user value
     myUser.value = SessionManager.instance.getUser();
   }
 
@@ -92,19 +102,16 @@ class SettingsScreenController extends BaseController {
   Future<void> deleteCurrentUser() async {
     try {
       auth.User? user = auth.FirebaseAuth.instance.currentUser;
-
       if (user != null) {
-        await user.delete(); // Deletes the account
+        await user.delete();
         Loggers.success("User account deleted successfully.");
       } else {
         Loggers.success("No user is signed in.");
       }
     } on auth.FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        Loggers.error(
-            '⚠️ The user must re-authenticate before deleting their account.');
+        Loggers.error('⚠️ The user must re-authenticate before deleting their account.');
         reAuthenticateAndDelete(myUser.value?.identity ?? '');
-        // Prompt for re-authentication here
       } else {
         Loggers.error('❌ Error: ${e.message}');
       }
@@ -114,16 +121,13 @@ class SettingsScreenController extends BaseController {
   Future<void> reAuthenticateAndDelete(String email) async {
     try {
       auth.User? user = auth.FirebaseAuth.instance.currentUser;
-
       if (user != null) {
         String? password = SessionManager.instance.getPassword();
         if (password == null) return;
         auth.AuthCredential credential =
             auth.EmailAuthProvider.credential(email: email, password: password);
-
         await user.reauthenticateWithCredential(credential);
         await user.delete();
-
         print("User re-authenticated and deleted.");
       }
     } catch (e) {
@@ -138,6 +142,7 @@ class SettingsScreenController extends BaseController {
         try {
           StatusModel result = await UserService.instance.logoutUser();
           if (result.status == true) {
+            await FlutterCrispChat.resetCrispChatSession();
             GoogleSignIn.instance.signOut();
             SessionManager.instance.clearSomeKey();
             Get.offAll(() => const LoginScreen());
