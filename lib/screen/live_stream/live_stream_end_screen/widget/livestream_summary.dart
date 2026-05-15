@@ -49,6 +49,7 @@ class LiveStreamSummary extends StatelessWidget {
                     fontSize: 14,
                     fontColor: whitePure(context),
                     isVerify: userState?.user?.isVerify,
+                    verifyType: userState?.user?.verifyType, // ✅ التعديل
                     iconSize: 18,
                   ),
                   Text(userState?.user?.fullname ?? '',
