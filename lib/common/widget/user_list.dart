@@ -19,6 +19,7 @@ class UserList<T> extends StatelessWidget {
   final String Function(T) getUserName;
   final String Function(T) getFullName;
   final int Function(T) getVerified;
+  final int Function(T)? getVerifyType;
   final RxBool isLoading;
 
   const UserList(
@@ -30,7 +31,8 @@ class UserList<T> extends StatelessWidget {
       required this.getProfilePhoto,
       required this.getUserName,
       required this.getFullName,
-      required this.getVerified});
+      required this.getVerified,
+      this.getVerifyType});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class UserList<T> extends StatelessWidget {
                         profilePhoto: getProfilePhoto(user),
                         userName: getUserName(user),
                         isVerified: getVerified(user),
+                        verifyType: getVerifyType?.call(user) ?? 1,
                       );
                     }),
               ),
@@ -69,6 +72,7 @@ class UserCard<T> extends StatelessWidget {
   final String? userName;
   final String? fullName;
   final int isVerified;
+  final int verifyType;
 
   const UserCard(
       {super.key,
@@ -76,7 +80,8 @@ class UserCard<T> extends StatelessWidget {
       required this.profilePhoto,
       required this.userName,
       required this.fullName,
-      this.isVerified = 0});
+      this.isVerified = 0,
+      this.verifyType = 1});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +106,8 @@ class UserCard<T> extends StatelessWidget {
                           username: userName,
                           fontSize: 13,
                           iconSize: 14,
-                          isVerify: isVerified),
+                          isVerify: isVerified,
+                          verifyType: verifyType),
                       Text(
                         fullName ?? '',
                         style: TextStyleCustom.outFitLight300(
