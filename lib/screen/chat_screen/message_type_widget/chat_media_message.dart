@@ -55,6 +55,7 @@ class ChatMediaMessage extends StatelessWidget {
                           fullname: message.chatUser?.fullname,
                           isVerify: message.chatUser?.isVerify,
               verifyType: message.chatUser?.verifyType,
+              verifyType: message.chatUser?.verifyType,
                         ))));
               } else {
                 context.pushTransparentRoute(ImageViewScreen(images: [

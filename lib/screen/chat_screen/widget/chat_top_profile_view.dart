@@ -51,6 +51,7 @@ class ChatTopProfileView extends StatelessWidget {
                       profilePhoto: chatUser?.profile,
                       isVerify: chatUser?.isVerify,
               verifyType: chatUser?.verifyType,
+              verifyType: chatUser?.verifyType,
                     );
                     NavigationService.shared.openProfileScreen(
                       user,

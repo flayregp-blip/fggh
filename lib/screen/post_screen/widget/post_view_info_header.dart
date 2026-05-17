@@ -52,6 +52,7 @@ class PostViewInfoHeader extends StatelessWidget {
                 fontSize: 12,
                 iconSize: 18,
                 isVerify: user?.isVerify,
+              verifyType: user?.verifyType,
                 verifyType: user?.verifyType,
                 child: Text(
                     '${post.createdAt?.timeAgo ?? ''} '
