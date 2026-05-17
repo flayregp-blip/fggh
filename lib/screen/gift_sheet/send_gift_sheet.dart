@@ -242,6 +242,7 @@ class _PopupMenuItemCustom extends StatelessWidget {
           FullNameWithBlueTick(
             username: streamUser.username,
             isVerify: streamUser.isVerify,
+              verifyType: streamUser.verifyType,
             iconSize: 14,
           ),
           if (isPopupChild)
