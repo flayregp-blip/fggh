@@ -338,8 +338,7 @@ class LiveStreamListView extends StatelessWidget {
               child: FullNameWithBlueTick(
                   username: hostUser.username,
                   isVerify: hostUser.isVerify,
-              verifyType: hostUser.verifyType,
-                  verifyType: hostUser.verifyType,
+              verifyType: hostUser.verifyType,,
                   iconSize: 16,
                   icon: AssetRes.icVerifiedWhite,
                   style: TextStyleCustom.outFitMedium500(color: whitePure(context), fontSize: 15)),

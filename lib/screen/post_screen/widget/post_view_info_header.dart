@@ -52,8 +52,7 @@ class PostViewInfoHeader extends StatelessWidget {
                 fontSize: 12,
                 iconSize: 18,
                 isVerify: user?.isVerify,
-              verifyType: user?.verifyType,
-                verifyType: user?.verifyType,
+              verifyType: user?.verifyType,,
                 child: Text(
                     '${post.createdAt?.timeAgo ?? ''} '
                     '${(post.isPinned == 1 && shouldShowPinOption && post.userId == SessionManager.instance.getUserID()) ? AppRes.postPinIcon : ''}',
