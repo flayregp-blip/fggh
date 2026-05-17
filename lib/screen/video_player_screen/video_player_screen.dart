@@ -267,7 +267,6 @@ class UserInfoData extends StatelessWidget {
                 FullNameWithBlueTick(
                   username: post?.user?.username,
                   isVerify: post?.user?.isVerify,
-              verifyType: post?.user?.verifyType,
                   fontColor: whitePure(context),
                   fontSize: 14,
                   onTap: onNavigateUser,

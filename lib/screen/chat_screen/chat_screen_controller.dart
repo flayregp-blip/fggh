@@ -930,7 +930,6 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       fullname: story.user?.fullname ?? '',
       profilePhoto: story.user?.profilePhoto ?? '',
       isVerify: story.user?.isVerify,
-              verifyType: story.user?.verifyType,,
       bio: story.user?.bio ?? '',
       stories: [story],
     );

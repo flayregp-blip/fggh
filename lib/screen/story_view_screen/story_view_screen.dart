@@ -79,7 +79,6 @@ class StoryViewSheet extends StatelessWidget {
                               FullNameWithBlueTick(
                                 username: user?.fullname,
                                 isVerify: user?.isVerify,
-              verifyType: user?.verifyType,
                                 fontColor: whitePure(context),
                                 fontSize: 12,
                                 iconSize: 17,

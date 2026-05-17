@@ -65,7 +65,7 @@ class CommentCard extends StatelessWidget {
                       },
                       username: comment?.user?.username ?? '',
                       isVerify: comment?.user?.isVerify,
-              verifyType: comment?.user?.verifyType,,
+                      verifyType: comment?.user?.verifyType,
                       child: Text(
                           '${comment?.createdAt?.timeAgo ?? ''}${comment?.isPinned == 1 ? AppRes.postPinIcon : ''}',
                           style: TextStyleCustom.outFitLight300(

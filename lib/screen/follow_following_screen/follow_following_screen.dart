@@ -232,7 +232,6 @@ class _UserProfileTileState extends State<UserProfileTile> {
                               FullNameWithBlueTick(
                                 username: widget.user?.username ?? '',
                                 isVerify: widget.user?.isVerify,
-              verifyType: widget.user?.verifyType,
                                 fontSize: 13,
                                 iconSize: 14,
                               ),

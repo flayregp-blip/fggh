@@ -75,7 +75,7 @@ class UserInfoHeader extends StatelessWidget {
             child: FullNameWithBlueTick(
                 username: user?.username,
                 isVerify: user?.isVerify,
-              verifyType: user?.verifyType,,
+                verifyType: user?.verifyType,
                 fontColor: whitePure(context),
                 fontSize: 14,
                 iconSize: 18),

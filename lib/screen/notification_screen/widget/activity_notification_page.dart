@@ -47,7 +47,6 @@ class ActivityNotificationPage extends StatelessWidget {
                     username: data.fromUser?.username,
                     fontSize: 12,
                     isVerify: data.fromUser?.isVerify,
-              verifyType: data.fromUser?.verifyType,
                     onTap: () => controller.onDescriptionTap(data)),
                 if (data.type != ActivityNotifyType.none)
                   InkWell(

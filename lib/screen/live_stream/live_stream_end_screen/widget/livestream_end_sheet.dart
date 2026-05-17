@@ -47,7 +47,6 @@ class LivestreamEndSheet extends StatelessWidget {
                         fontSize: 14,
                         fontColor: whitePure(context),
                         isVerify: userState?.user?.isVerify,
-              verifyType: userState?.user?.verifyType,
                         iconSize: 18,
                       ),
                       Text(userState?.user?.fullname ?? 'unknown',

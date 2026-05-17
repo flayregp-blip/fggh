@@ -233,7 +233,7 @@ class UserNameView extends StatelessWidget {
           username: user?.username,
           style: TextStyleCustom.unboundedSemiBold600(color: textDarkGrey(context), fontSize: 17),
           isVerify: user?.isVerify,
-              verifyType: user?.verifyType,,
+          verifyType: user?.verifyType,
           iconSize: 22,
           child: user?.getLevel.id == null
               ? const SizedBox()

@@ -171,7 +171,7 @@ class User {
         notifyGiftReceived: notifyGiftReceived ?? this.notifyGiftReceived,
         notifyChat: notifyChat ?? this.notifyChat,
         isVerify: isVerify ?? this.isVerify,
-              verifyType: isVerify ?? this.verifyType,,
+        verifyType: verifyType ?? this.verifyType,
         whoCanViewPost: whoCanViewPost ?? this.whoCanViewPost,
         showMyFollowing: showMyFollowing ?? this.showMyFollowing,
         receiveMessage: receiveMessage ?? this.receiveMessage,

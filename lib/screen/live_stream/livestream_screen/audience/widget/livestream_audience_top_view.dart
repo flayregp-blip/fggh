@@ -160,7 +160,6 @@ class _BuildCenterView extends StatelessWidget {
                   iconSize: 18,
                   fontColor: whitePure(context),
                   isVerify: hostUser?.isVerify,
-              verifyType: hostUser?.verifyType,
                 ),
                 FittedBox(
                   child: Container(

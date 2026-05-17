@@ -327,7 +327,6 @@ class MemberProfileCard extends StatelessWidget {
                     FullNameWithBlueTick(
                       username: user?.username,
                       isVerify: user?.isVerify,
-              verifyType: user?.verifyType,
                       fontSize: 13,
                       iconSize: 18,
                     ),

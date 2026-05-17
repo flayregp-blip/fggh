@@ -311,7 +311,7 @@ class LiveStreamUserView extends StatelessWidget {
               fontColor: whitePure(context),
               fontSize: 12,
               isVerify: liveUser?.isVerify,
-              verifyType: liveUser?.verifyType,,
+              verifyType: liveUser?.verifyType,
               onTap: () => _showUserActionSheet(liveUser!, state),
             ),
             if (alignment == null && isMuteVisible)
