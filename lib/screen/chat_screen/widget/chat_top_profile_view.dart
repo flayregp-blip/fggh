@@ -76,7 +76,8 @@ class ChatTopProfileView extends StatelessWidget {
                                 username: chatUser?.username ?? '',
                                 fontSize: 13,
                                 iconSize: 18,
-                                isVerify: chatUser?.isVerify),
+                                isVerify: chatUser?.isVerify,
+                              verifyType: chatUser?.verifyType,)
                             Text(chatUser?.fullname ?? '',
                                 style: TextStyleCustom.outFitLight300(
                                     color: textLightGrey(context),
