@@ -11,6 +11,7 @@ extension UserExtension on User {
         profile: profilePhoto,
         fullname: fullname,
         isVerify: isVerify,
+      verifyType: verifyType,
         identity: identity);
   }
 
