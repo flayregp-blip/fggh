@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   ### 🔥 Firebase
+  supabase_flutter: ^2.3.0
   firebase_core: ^4.3.0
   firebase_auth: ^6.1.3
   cloud_firestore: ^6.1.1

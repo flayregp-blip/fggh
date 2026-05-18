@@ -1,27 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shortzz/common/controller/base_controller.dart';
-import 'package:shortzz/common/controller/firebase_firestore_controller.dart';
-import 'package:shortzz/common/manager/logger.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
 import 'package:shortzz/common/widget/confirmation_dialog.dart';
 import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/chat/chat_thread.dart';
 import 'package:shortzz/model/user_model/user_model.dart';
 import 'package:shortzz/screen/dashboard_screen/dashboard_screen_controller.dart';
-import 'package:shortzz/utilities/firebase_const.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MessageScreenController extends BaseController {
   List<String> chatCategories = [LKey.chats.tr, LKey.requests.tr];
   RxInt selectedChatCategory = 0.obs;
-  FirebaseFirestore db = FirebaseFirestore.instance;
   PageController pageController = PageController();
   User? myUser = SessionManager.instance.getUser();
   RxList<ChatThread> chatsUsers = <ChatThread>[].obs;
   RxList<ChatThread> requestsUsers = <ChatThread>[].obs;
   final dashboardController = Get.find<DashboardScreenController>();
-  final firebaseFirestoreController = Get.find<FirebaseFirestoreController>();
+  final supabase = Supabase.instance.client;
+  RealtimeChannel? _channel;
 
   @override
   void onInit() {
@@ -30,70 +27,93 @@ class MessageScreenController extends BaseController {
     _listenToUserChatsAndRequests();
   }
 
+  @override
+  void onClose() {
+    _channel?.unsubscribe();
+    super.onClose();
+  }
+
   void onPageChanged(int index) {
     selectedChatCategory.value = index;
   }
 
   Future<void> _listenToUserChatsAndRequests() async {
     isLoading.value = true;
-    db
-        .collection(FirebaseConst.users)
-        .doc(myUser?.id.toString())
-        .collection(FirebaseConst.usersList)
-        .withConverter(
-            fromFirestore: (snapshot, options) => ChatThread.fromJson(snapshot.data()!),
-            toFirestore: (ChatThread value, options) => value.toJson())
-        .where(FirebaseConst.isDeleted, isEqualTo: false)
-        .orderBy(FirebaseConst.id, descending: true)
-        .snapshots()
-        .listen((event) {
+    final userId = myUser?.id.toString();
+    if (userId == null) {
       isLoading.value = false;
-      for (var change in event.docChanges) {
-        final ChatThread? chatUser = change.doc.data();
-        if (chatUser == null) continue;
+      return;
+    }
 
-        switch (change.type) {
-          case DocumentChangeType.added:
-            if (chatUser.userId != -1) {
-              firebaseFirestoreController.fetchUserIfNeeded(chatUser.userId ?? -1);
-            }
-            if (chatUser.chatType == ChatType.approved) {
-              chatsUsers.add(chatUser);
-            } else {
-              requestsUsers.add(chatUser);
-            }
+    // Initial fetch
+    final data = await supabase
+        .from('chat_threads')
+        .select()
+        .eq('owner_id', userId)
+        .eq('is_deleted', false)
+        .order('id', ascending: false);
 
-            break;
-          case DocumentChangeType.modified:
-            // Remove the user from their current list
-            final userId = chatUser.userId;
-            chatsUsers.removeWhere((user) => user.userId == userId);
-            requestsUsers.removeWhere((user) => user.userId == userId);
+    isLoading.value = false;
+    for (var row in data) {
+      final thread = ChatThread.fromJson(row);
+      thread.bindChatUser();
+      if (thread.chatType == ChatType.approved) {
+        chatsUsers.add(thread);
+      } else {
+        requestsUsers.add(thread);
+      }
+    }
 
-            (chatUser.chatType == ChatType.approved ? chatsUsers : requestsUsers).add(chatUser);
-          case DocumentChangeType.removed:
-            // Remove the user from their current list
-            final userId = chatUser.userId;
-            chatsUsers.removeWhere((user) => user.userId == userId);
-            requestsUsers.removeWhere((user) => user.userId == userId);
-            break;
+    // Real-time listener
+    _channel = supabase
+        .channel('chat_threads_$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'chat_threads',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'owner_id',
+            value: userId,
+          ),
+          callback: (payload) {
+            _handleRealtimeChange(payload);
+          },
+        )
+        .subscribe();
+  }
+
+  void _handleRealtimeChange(PostgresChangePayload payload) {
+    if (payload.eventType == PostgresChangeEvent.insert) {
+      final thread = ChatThread.fromJson(payload.newRecord);
+      if (thread.isDeleted == true) return;
+      thread.bindChatUser();
+      if (thread.chatType == ChatType.approved) {
+        chatsUsers.add(thread);
+      } else {
+        requestsUsers.add(thread);
+      }
+    } else if (payload.eventType == PostgresChangeEvent.update) {
+      final thread = ChatThread.fromJson(payload.newRecord);
+      final uid = thread.userId;
+      chatsUsers.removeWhere((u) => u.userId == uid);
+      requestsUsers.removeWhere((u) => u.userId == uid);
+      if (thread.isDeleted == false) {
+        thread.bindChatUser();
+        if (thread.chatType == ChatType.approved) {
+          chatsUsers.add(thread);
+        } else {
+          requestsUsers.add(thread);
         }
       }
+    } else if (payload.eventType == PostgresChangeEvent.delete) {
+      final uid = payload.oldRecord['user_id'];
+      chatsUsers.removeWhere((u) => u.userId == uid);
+      requestsUsers.removeWhere((u) => u.userId == uid);
+    }
 
-      chatsUsers.sort(
-        (a, b) {
-          return (b.id ?? '0').compareTo(a.id ?? '0');
-        },
-      );
-      requestsUsers.sort(
-        (a, b) {
-          return (b.id ?? '0').compareTo(a.id ?? '0');
-        },
-      );
-
-      // Loggers.success('CHAT USER: ${chatsUsers.length}');
-      // Loggers.success('REQUEST USER: ${requestsUsers.length}');
-    });
+    chatsUsers.sort((a, b) => (b.id ?? '0').compareTo(a.id ?? '0'));
+    requestsUsers.sort((a, b) => (b.id ?? '0').compareTo(a.id ?? '0'));
   }
 
   void onLongPress(ChatThread chatConversation) {
@@ -101,19 +121,15 @@ class MessageScreenController extends BaseController {
       title: LKey.deleteChatUserTitle.trParams({'user_name': chatConversation.chatUser?.username ?? ''}),
       description: LKey.deleteChatUserDescription.tr,
       onTap: () async {
-        int time = DateTime.now().millisecondsSinceEpoch;
         showLoader();
-        await db
-            .collection(FirebaseConst.users)
-            .doc(myUser?.id.toString())
-            .collection(FirebaseConst.usersList)
-            .doc(chatConversation.userId.toString())
+        await supabase
+            .from('chat_threads')
             .update({
-          FirebaseConst.deletedId: time,
-          FirebaseConst.isDeleted: true,
-        }).catchError((error) {
-          Loggers.error('USER NOT DELETE : $error');
-        });
+              'deleted_id': DateTime.now().millisecondsSinceEpoch,
+              'is_deleted': true,
+            })
+            .eq('owner_id', myUser?.id.toString() ?? '')
+            .eq('user_id', chatConversation.userId ?? 0);
         stopLoader();
       },
     ));
