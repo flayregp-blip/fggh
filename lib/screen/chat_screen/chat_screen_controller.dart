@@ -38,6 +38,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
   List<UserRequestAction> requestType = UserRequestAction.values;
   User? myUser = SessionManager.instance.getUser();
   User? otherUser;
+  final Setting? setting = SessionManager.instance.getSettings();
   RxBool isTextEmpty = true.obs;
   RxBool hasMore = true.obs;
   RxBool isExpanded = false.obs;

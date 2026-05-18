@@ -255,7 +255,7 @@ class ShareSheetWidgetController extends BaseController {
     for (var element in controller.selectedConversation) {
       final controller = Get.put(ChatScreenController(element.obs),
           tag: '${element.conversationId}');
-      await controller.sendMessageToFireStore(
+      await controller.sendMessage(
           type: MessageType.post,
           postMessage: jsonEncode(post?.toJsonForChat()));
 
