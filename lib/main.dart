@@ -1,3 +1,4 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -23,6 +24,11 @@ import 'common/service/network_helper/network_helper.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   Loggers.success("Handling a background message: ${message.data}");
   await Firebase.initializeApp();
+
+  await Supabase.initialize(
+    url: 'https://jzausyutomjmvghiuogw.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YXVzeXV0b21qbXZnaGl1b2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUzNDgsImV4cCI6MjA5NDY2MTM0OH0.YvmP8PGiANmkCtennitwYWHwroK9fLwyiU6WDMVwYL0',
+  );
   if (Platform.isIOS) {
     FirebaseNotificationManager.instance.showNotification(message);
   }
@@ -33,6 +39,11 @@ Future<void> main() async {
 
   try {
     await Firebase.initializeApp();
+
+  await Supabase.initialize(
+    url: 'https://jzausyutomjmvghiuogw.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YXVzeXV0b21qbXZnaGl1b2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUzNDgsImV4cCI6MjA5NDY2MTM0OH0.YvmP8PGiANmkCtennitwYWHwroK9fLwyiU6WDMVwYL0',
+  );
 
     // Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
