@@ -7,7 +7,7 @@ import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/chat/chat_thread.dart';
 import 'package:shortzz/model/user_model/user_model.dart';
 import 'package:shortzz/screen/dashboard_screen/dashboard_screen_controller.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class MessageScreenController extends BaseController {
   List<String> chatCategories = [LKey.chats.tr, LKey.requests.tr];
