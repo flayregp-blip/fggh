@@ -278,7 +278,14 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       waveData: waveData?.join(','),
     );
 
-    await supabase.from('messages').insert(message.toJson());
+    try {
+      await supabase.from('messages').insert(message.toJson());
+      Loggers.success('Message inserted: \${message.id}');
+    } catch (e) {
+      Loggers.error('Insert message error: \$e');
+    }
+    Loggers.info('conversationId: \${conversationUser.value.conversationId}');
+    Loggers.info('myId: \$myId, otherId: \$otherId');
 
     String senderLastMsg = getLastMessage(type, message, isSender: true);
     String receiverLastMsg = getLastMessage(type, message, isSender: false);
