@@ -299,13 +299,19 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'id': time.toString(), 'last_msg': senderLastMsg, 'msg_count': 0, 'is_deleted': false,
       }).eq('owner_id', myId).eq('conversation_id', conversationUser.value.conversationId ?? '');
     } else {
-      final t = conversationUser.value.toJson();
-      t['owner_id'] = myId;
-      t['id'] = time.toString();
-      t['last_msg'] = senderLastMsg;
-      t['msg_count'] = 0;
-      t['is_deleted'] = false;
-      await supabase.from('chat_threads').insert(t);
+      await supabase.from('chat_threads').insert({
+        'owner_id': myId,
+        'user_id': otherId,
+        'conversation_id': conversationUser.value.conversationId,
+        'id': time.toString(),
+        'last_msg': senderLastMsg,
+        'msg_count': 0,
+        'chat_type': conversationUser.value.chatType?.value ?? 'approved',
+        'is_deleted': false,
+        'deleted_id': 0,
+        'i_blocked': false,
+        'i_am_blocked': false,
+      });
     }
 
     // Update receiver thread
