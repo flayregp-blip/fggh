@@ -291,6 +291,9 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
     String receiverLastMsg = getLastMessage(type, message, isSender: false);
 
     // Update sender thread
+    Loggers.info('=== SENDING TO CHAT_THREADS ===');
+    Loggers.info('myId: $myId, otherId: $otherId');
+    Loggers.info('conversationId: ${conversationUser.value.conversationId}');
     final senderExists = await supabase.from('chat_threads')
         .select('id').eq('owner_id', myId).eq('conversation_id', conversationUser.value.conversationId ?? '').maybeSingle();
 
@@ -299,7 +302,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'id': time.toString(), 'last_msg': senderLastMsg, 'msg_count': 0, 'is_deleted': false,
       }).eq('owner_id', myId).eq('conversation_id', conversationUser.value.conversationId ?? '');
     } else {
-      await supabase.from('chat_threads').insert({
+      try { await supabase.from('chat_threads').insert({
         'owner_id': myId,
         'user_id': otherId,
         'conversation_id': conversationUser.value.conversationId,
