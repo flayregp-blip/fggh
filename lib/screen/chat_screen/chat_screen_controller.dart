@@ -314,7 +314,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'deleted_id': 0,
         'i_blocked': false,
         'i_am_blocked': false,
-      });
+      }); } catch(e) { Loggers.error('SENDER INSERT ERROR: ' + e.toString()); }
     }
 
     // Update receiver thread
