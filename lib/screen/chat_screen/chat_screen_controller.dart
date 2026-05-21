@@ -316,7 +316,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'id': time.toString(), 'last_msg': receiverLastMsg, 'is_deleted': false,
         'msg_count': (receiverExists['msg_count'] ?? 0) + 1,
       }).eq('owner_id', otherId).eq('conversation_id', conversationUser.value.conversationId ?? '');
-    } else {
+    } else { try {
       ChatType status = ChatType.approved;
       String? reqType = UserRequestAction.accept.title;
       if (otherUser != null) {
@@ -326,7 +326,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       await supabase.from('chat_threads').insert({
         'owner_id': otherId,
         'user_id': myId,
-        'conversation_id': conversationUser.value.conversationId,
+        'conversation_id': conversationUser.value.conversationId ?? '',
         'id': (time + 1).toString(),
         'last_msg': receiverLastMsg,
         'msg_count': 1,
@@ -337,7 +337,8 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'i_blocked': false,
         'i_am_blocked': false,
       });
-    }
+      });
+      } catch(e) { print('RECEIVER ERR: ' + e.toString()); }
 
     pushNotificationToUser(message);
   }
