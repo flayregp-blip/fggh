@@ -291,21 +291,11 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
     String receiverLastMsg = getLastMessage(type, message, isSender: false);
 
     // Update sender thread
-    Loggers.info('=== SENDING TO CHAT_THREADS ===');
-    Loggers.info('myId: $myId, otherId: $otherId');
-    Loggers.info('conversationId: ${conversationUser.value.conversationId}');
-    final senderExists = await supabase.from('chat_threads')
-        .select('id').eq('owner_id', myId).eq('conversation_id', conversationUser.value.conversationId ?? '').maybeSingle();
-
-    if (senderExists != null) {
-      await supabase.from('chat_threads').update({
-        'id': time.toString(), 'last_msg': senderLastMsg, 'msg_count': 0, 'is_deleted': false,
-      }).eq('owner_id', myId).eq('conversation_id', conversationUser.value.conversationId ?? '');
-    } else {
-      try { await supabase.from('chat_threads').insert({
+    try {
+      await supabase.from('chat_threads').upsert({
         'owner_id': myId,
         'user_id': otherId,
-        'conversation_id': conversationUser.value.conversationId,
+        'conversation_id': conversationUser.value.conversationId ?? '',
         'id': time.toString(),
         'last_msg': senderLastMsg,
         'msg_count': 0,
@@ -314,10 +304,10 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'deleted_id': 0,
         'i_blocked': false,
         'i_am_blocked': false,
-      }); } catch(e) { Loggers.error('SENDER INSERT ERROR: ' + e.toString()); }
-    }
+      }, onConflict: 'owner_id,conversation_id');
+    } catch(e) { Loggers.error('SENDER UPSERT ERROR: ' + e.toString()); }
 
-    // Update receiver thread
+        // Update receiver thread
     final receiverExists = await supabase.from('chat_threads')
         .select('id').eq('owner_id', otherId).eq('conversation_id', conversationUser.value.conversationId ?? '').maybeSingle();
 
