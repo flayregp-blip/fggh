@@ -86,33 +86,22 @@ class ChatThread {
 
   /// ✅ Initialize and auto-sync with controller
   void bindChatUser() {
-    final controller = Get.find<FirebaseFirestoreController>();
-
-    void updateUser() {
-      final appUser = controller.users.firstWhereOrNull((element) => element.userId == userId);
-
-      if (appUser == null) {
-        UserService.instance
-            .fetchUserDetails(
-          userId: userId,
-          onError: () => controller.deleteUser(userId),
-        )
-            .then((value) {
-          if (value == null) {
-            controller.deleteUser(userId);
-          } else {
-            controller.addUser(value);
-          }
-        });
+    UserService.instance
+        .fetchUserDetails(
+      userId: userId,
+      onError: () {},
+    )
+        .then((value) {
+      if (value != null) {
+        _chatUser.value = AppUser(
+          userId: value.id,
+          username: value.username,
+          fullname: value.fullname,
+          profile: value.profilePhoto,
+          isVerify: value.isVerify,
+        );
       }
-      _chatUser.value = appUser;
-    }
-
-    // React when users list changes
-    ever(controller.users, (_) => updateUser());
-
-    // Initial call
-    updateUser();
+    });
   }
 }
 
