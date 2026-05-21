@@ -62,7 +62,7 @@ class ChatConversationUserCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(DateTime.fromMillisecondsSinceEpoch(int.parse(chatConversation.id ?? '0')).toString().timeAgo,
+                  Text(DateTime.fromMillisecondsSinceEpoch(int.tryParse(chatConversation.id ?? '0') ?? 0).toString().timeAgo,
                       style: TextStyleCustom.outFitLight300(fontSize: 13, color: textLightGrey(context))),
                   Visibility(
                     visible: (chatConversation.msgCount ?? 0) > 0,
