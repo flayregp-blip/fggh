@@ -39,8 +39,8 @@ class MessageScreenController extends BaseController {
 
   Future<void> _listenToUserChatsAndRequests() async {
     isLoading.value = true;
-    final userId = myUser?.id;
-    if (userId == null) {
+    final userId = myUser?.id ?? SessionManager.instance.getUserID();
+    if (userId == 0 || userId == null) {
       isLoading.value = false;
       return;
     }
