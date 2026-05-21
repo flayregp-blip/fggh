@@ -49,7 +49,7 @@ class MessageScreenController extends BaseController {
     final data = await supabase
         .from('chat_threads')
         .select()
-        .eq('owner_id', userId)
+        .eq('owner_id', myUser?.id ?? -1)
         .eq('is_deleted', false)
         .order('id', ascending: false);
 
@@ -74,7 +74,7 @@ class MessageScreenController extends BaseController {
           filter: PostgresChangeFilter(
             type: PostgresChangeFilterType.eq,
             column: 'owner_id',
-            value: userId,
+            value: myUser?.id ?? -1,
           ),
           callback: (payload) {
             _handleRealtimeChange(payload);
