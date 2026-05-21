@@ -259,7 +259,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
   }) async {
     int time = DateTime.now().millisecondsSinceEpoch;
     final myId = myUser?.id ?? -1;
-    final otherId = conversationUser.value.chatUser?.userId ?? -1;
+    final otherId = conversationUser.value.userId ?? -1;
 
     MessageData message = MessageData(
       userId: myId,
