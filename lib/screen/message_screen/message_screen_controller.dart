@@ -52,6 +52,7 @@ class MessageScreenController extends BaseController {
         .eq('owner_id', myUser?.id ?? -1)
         .eq('is_deleted', false)
         .order('id', ascending: false);
+    print("DEBUG: data count = ${data.length}, userId = ${myUser?.id}");
 
     isLoading.value = false;
     for (var row in data) {
