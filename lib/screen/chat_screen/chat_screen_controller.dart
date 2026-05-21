@@ -317,6 +317,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'msg_count': (receiverExists['msg_count'] ?? 0) + 1,
       }).eq('owner_id', otherId).eq('conversation_id', conversationUser.value.conversationId ?? '');
     } else {
+      try {
       ChatType status = ChatType.approved;
       String? reqType = UserRequestAction.accept.title;
       if (otherUser != null) {
