@@ -327,7 +327,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'owner_id': otherId,
         'user_id': myId,
         'conversation_id': conversationUser.value.conversationId,
-        'id': time.toString(),
+        'id': (time + 1).toString(),
         'last_msg': receiverLastMsg,
         'msg_count': 1,
         'chat_type': status.value,
