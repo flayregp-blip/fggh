@@ -326,7 +326,7 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
       await supabase.from('chat_threads').insert({
         'owner_id': otherId,
         'user_id': myId,
-        'conversation_id': conversationUser.value.conversationId ?? '',
+        'conversation_id': conversationUser.value.conversationId,
         'id': (time + 1).toString(),
         'last_msg': receiverLastMsg,
         'msg_count': 1,
@@ -336,9 +336,9 @@ class ChatScreenController extends BlockUserController with GetTickerProviderSta
         'deleted_id': 0,
         'i_blocked': false,
         'i_am_blocked': false,
-      });
-      });
-      } catch(e) { print('RECEIVER ERR: ' + e.toString()); }
+        });
+    } catch (e) { print("RECEIVER ERR: " + e.toString()); }
+    }
 
     pushNotificationToUser(message);
   }
