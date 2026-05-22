@@ -244,7 +244,6 @@ class _PopupMenuItemCustom extends StatelessWidget {
             username: streamUser.username,
             isVerify: streamUser.isVerify,
              verifyType: streamUser.verifyType,
-              verifyType: streamUser.verifyType,
             iconSize: 14,
           ),
           if (isPopupChild)

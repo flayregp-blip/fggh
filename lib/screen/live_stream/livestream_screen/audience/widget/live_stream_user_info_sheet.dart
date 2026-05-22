@@ -149,7 +149,6 @@ class _LiveStreamUserInfoSheetState extends State<LiveStreamUserInfoSheet> {
                                   username: user?.username,
                                   isVerify: user?.isVerify,
              verifyType: user?.verifyType,
-              verifyType: user?.verifyType,
                                   fontSize: 14,
                                   iconSize: 18),
                               Text(

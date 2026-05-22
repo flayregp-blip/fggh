@@ -135,7 +135,6 @@ class _AudioSheetState extends State<AudioSheet> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   isVerify: widget.music?.user?.isVerify,
                  verifyType: widget.music?.user?.verifyType,
-                  verifyType: widget.music?.user?.verifyType, // ✅ التعديل
                 ),
                 const SizedBox(height: 2),
                 Text(

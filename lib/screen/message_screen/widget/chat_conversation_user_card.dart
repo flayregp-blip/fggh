@@ -48,7 +48,6 @@ class ChatConversationUserCard extends StatelessWidget {
                       iconSize: 18,
                       isVerify: user?.isVerify,
              verifyType: user?.verifyType,
-              verifyType: user?.verifyType,
                     ),
                     Text(chatConversation.lastMsg ?? '',
                         style: TextStyleCustom.outFitLight300(fontSize: 15, color: textLightGrey(context)),

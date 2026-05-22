@@ -71,7 +71,6 @@ class LiveStreamCommentView extends StatelessWidget {
                             username: senderUser?.username,
                             isVerify: senderUser?.isVerify,
                              verifyType: senderUser?.verifyType,
-                              verifyType: senderUser?.verifyType,
                             fontColor: whitePure(context),
                             opacity: 0.7,
                             fontSize: 12,

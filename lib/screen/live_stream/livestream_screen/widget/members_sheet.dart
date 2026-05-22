@@ -328,7 +328,6 @@ class MemberProfileCard extends StatelessWidget {
                       username: user?.username,
                       isVerify: user?.isVerify,
              verifyType: user?.verifyType,
-              verifyType: user?.verifyType,
                       fontSize: 13,
                       iconSize: 18,
                     ),
