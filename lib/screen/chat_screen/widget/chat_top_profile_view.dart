@@ -50,6 +50,7 @@ class ChatTopProfileView extends StatelessWidget {
                       username: chatUser?.username,
                       profilePhoto: chatUser?.profile,
                       isVerify: chatUser?.isVerify,
+             verifyType: chatUser?.verifyType,
               verifyType: chatUser?.verifyType,
                     );
                     NavigationService.shared.openProfileScreen(
@@ -77,6 +78,7 @@ class ChatTopProfileView extends StatelessWidget {
                                 fontSize: 13,
                                 iconSize: 18,
                                 isVerify: chatUser?.isVerify,
+                verifyType: chatUser?.verifyType,
                 ),
                             Text(chatUser?.fullname ?? '',
                                 style: TextStyleCustom.outFitLight300(

@@ -78,7 +78,8 @@ class SendGiftSheet extends StatelessWidget {
                               child: FullNameWithBlueTick(
                                   username: streamUsers.first.username,
                                   fontColor: whitePure(context),
-                                  isVerify: streamUsers.first.isVerify))
+                                  isVerify: streamUsers.first.isVerify,
+                  verifyType: streamUsers.first.verifyType))
                         ],
                       ),
                       const SizedBox(height: 5),
@@ -242,6 +243,7 @@ class _PopupMenuItemCustom extends StatelessWidget {
           FullNameWithBlueTick(
             username: streamUser.username,
             isVerify: streamUser.isVerify,
+             verifyType: streamUser.verifyType,
               verifyType: streamUser.verifyType,
             iconSize: 14,
           ),

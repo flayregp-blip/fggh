@@ -209,7 +209,8 @@ class ChatPostProfile extends StatelessWidget {
                 username: user?.username ?? '',
                 fontColor: whitePure(context),
                 iconSize: 18,
-                isVerify: user?.isVerify),
+                isVerify: user?.isVerify,
+                verifyType: user?.verifyType)
           )
         ],
       ),

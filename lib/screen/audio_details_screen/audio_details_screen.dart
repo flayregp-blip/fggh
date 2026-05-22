@@ -124,6 +124,7 @@ class AudioDetailsProfile extends StatelessWidget {
                     fontSize: 14,
                     mainAxisAlignment: MainAxisAlignment.center,
                     isVerify: music?.user?.isVerify,
+                  verifyType: music?.user?.verifyType,
                   ),
                   const SizedBox(height: 2),
                   Text(

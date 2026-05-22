@@ -68,6 +68,7 @@ class QrCodeScreen extends StatelessWidget {
                               fontSize: 14,
                               iconSize: 20,
                               isVerify: controller.myUser?.isVerify,
+                             verifyType: controller.myUser?.verifyType,
                               verifyType: controller.myUser?.verifyType, // ✅ التعديل
                             ),
                             const SizedBox(height: 2),
