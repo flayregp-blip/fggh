@@ -85,6 +85,7 @@ class _MentionSheetState extends State<MentionSheet> {
                       getProfilePhoto: (p0) => p0.profilePhoto ?? '',
                       getUserName: (p0) => p0.username ?? '',
                       getVerified: (p0) => p0.isVerify ?? 0,
+                      getVerifyType: (p0) => p0.verifyType ?? 1,
                       loadMore: searchUsers),
             ))
           ],
