@@ -66,14 +66,12 @@ class FeedTextFieldView extends StatelessWidget {
                     text: data.title,
                     onTap: () {
                       helper.detectableTextFocusNode.unfocus();
-                      switch (index) {
-                        case 0:
+                      switch (data) {
+                        case FeedTagType.mention:
                           Get.bottomSheet(const MentionSheet(),
                                   isScrollControlled: true)
                               .then((value) {
-                            if (helper
-                                    .detectableTextController.typingDetection ==
-                                null) {
+                            if (helper.detectableTextController.typingDetection == null) {
                               return;
                             }
                             helper.onChanged(helper
@@ -81,13 +79,11 @@ class FeedTextFieldView extends StatelessWidget {
                                     ?.split('@')[1] ??
                                 '');
                           });
-                        case 1:
+                        case FeedTagType.hashtag:
                           Get.bottomSheet(const HashTagSheet(),
                                   isScrollControlled: true)
                               .then((value) {
-                            if (helper
-                                    .detectableTextController.typingDetection ==
-                                null) {
+                            if (helper.detectableTextController.typingDetection == null) {
                               return;
                             }
                             helper.onChanged(helper
@@ -95,7 +91,7 @@ class FeedTextFieldView extends StatelessWidget {
                                     ?.split('#')[1] ??
                                 '');
                           });
-                        case 2:
+                        case FeedTagType.location:
                           Get.bottomSheet(
                               LocationSheet(
                                   onLocationTap: controller.onLocationTap),
@@ -117,7 +113,6 @@ class IconWithText extends StatelessWidget {
   final String icon;
   final String text;
   final VoidCallback? onTap;
-
   const IconWithText(
       {super.key, required this.icon, required this.text, this.onTap});
 
