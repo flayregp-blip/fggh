@@ -227,6 +227,40 @@ class Places {
     _googleMapsLinks = googleMapsLinks;
   }
 
+
+  factory Places.fromNominatim(Map<String, dynamic> json) {
+    final address = json['address'] as Map<String, dynamic>? ?? {};
+    final displayName = json['display_name'] as String? ?? '';
+    final namePart = json['name'] as String? ?? displayName.split(',').first.trim();
+    
+    final city = address['city'] ?? address['town'] ?? address['village'] ?? address['county'] ?? '';
+    final state = address['state'] ?? '';
+    final country = address['country'] ?? '';
+    final lat = double.tryParse(json['lat']?.toString() ?? '0') ?? 0;
+    final lon = double.tryParse(json['lon']?.toString() ?? '0') ?? 0;
+
+    return Places(
+      id: json['place_id']?.toString(),
+      displayName: DisplayName(text: namePart),
+      formattedAddress: displayName,
+      location: Location(latitude: lat, longitude: lon),
+      addressComponents: [
+        if (city.isNotEmpty) AddressComponents(
+          longText: city, shortText: city,
+          types: ['administrative_area_level_3'],
+        ),
+        if (state.isNotEmpty) AddressComponents(
+          longText: state, shortText: state,
+          types: ['administrative_area_level_1'],
+        ),
+        if (country.isNotEmpty) AddressComponents(
+          longText: country, shortText: address['country_code']?.toString().toUpperCase() ?? country,
+          types: ['country'],
+        ),
+      ],
+    );
+  }
+
   Places.fromJson(dynamic json) {
     _name = json['name'];
     _id = json['id'];
