@@ -99,6 +99,7 @@ class ChatThread {
           fullname: value.fullname,
           profile: value.profilePhoto,
           isVerify: value.isVerify,
+          verifyType: value.verifyType,
         );
       }
     });
