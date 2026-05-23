@@ -38,27 +38,30 @@ class TextButtonCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin:
-          margin ?? EdgeInsets.symmetric(horizontal: horizontalMargin ?? 15),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          height: btnHeight ?? 57,
-          width: btnWidth,
-          padding: padding,
-          alignment: Alignment.center,
-          decoration: ShapeDecoration(
-              shape: SmoothRectangleBorder(
-                  borderRadius: SmoothBorderRadius(
-                      cornerRadius: radius ?? 10, cornerSmoothing: 1),
-                  side: borderSide ?? BorderSide.none),
-              color: backgroundColor ?? whitePure(context)),
-          child: child ??
-              Text(
-                title.capitalize ?? '',
-            style: TextStyleCustom.outFitRegular400(
-                color: titleColor ?? textDarkGrey(context),
-                fontSize: fontSize ?? 17),
+      margin: margin ?? EdgeInsets.symmetric(horizontal: horizontalMargin ?? 15),
+      child: ClipSmoothRect(
+        radius: SmoothBorderRadius(
+            cornerRadius: radius ?? 10, cornerSmoothing: 1),
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            height: btnHeight ?? 57,
+            width: btnWidth,
+            padding: padding,
+            alignment: Alignment.center,
+            decoration: ShapeDecoration(
+                shape: SmoothRectangleBorder(
+                    borderRadius: SmoothBorderRadius(
+                        cornerRadius: radius ?? 10, cornerSmoothing: 1),
+                    side: borderSide ?? BorderSide.none),
+                color: backgroundColor ?? whitePure(context)),
+            child: child ??
+                Text(
+                  title.capitalize ?? '',
+                  style: TextStyleCustom.outFitRegular400(
+                      color: titleColor ?? textDarkGrey(context),
+                      fontSize: fontSize ?? 17),
+                ),
           ),
         ),
       ),
