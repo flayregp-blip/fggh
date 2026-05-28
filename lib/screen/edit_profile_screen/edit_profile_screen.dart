@@ -106,18 +106,11 @@ class EditProfileScreen extends StatelessWidget {
                     controller: controller.fullNameController,
                     title: LKey.fullName.tr,
                   ),
-                  Obx(() {
-                    return TextFieldCustom(
-                      controller: controller.usernameController,
-                      title: LKey.username.tr,
-                      onChanged: controller.checkUsernameAvailability,
-                      isError: !controller.isValidUserName.value,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'[a-zA-Z0-9._]')), // ✅ منع العربي
-                      ],
-                    );
-                  }),
+                  TextFieldCustom(
+                    controller: controller.usernameController,
+                    title: LKey.username.tr,
+                    enabled: false,
+                  ),
                   TextFieldCustom(
                       controller: controller.bioController,
                       title: LKey.bio.tr,
