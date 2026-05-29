@@ -106,11 +106,31 @@ class EditProfileScreen extends StatelessWidget {
                     controller: controller.fullNameController,
                     title: LKey.fullName.tr,
                   ),
-                  TextFieldCustom(
+                  Obx(() => TextFieldCustom(
                     controller: controller.usernameController,
                     title: LKey.username.tr,
-                    enabled: false,
-                  ),
+                    enabled: controller.canChangeUsername.value,
+                    onChanged: controller.canChangeUsername.value
+                        ? controller.checkUsernameAvailability
+                        : null,
+                    isError: controller.canChangeUsername.value
+                        ? !controller.isValidUserName.value
+                        : false,
+                    inputFormatters: controller.canChangeUsername.value
+                        ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]'))]
+                        : [],
+                  )),
+                  Obx(() => !controller.canChangeUsername.value
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                          child: Text(
+                            'يمكنك تغيير اسم المستخدم بعد ${controller.daysUntilCanChange.value} يوم',
+                            style: TextStyleCustom.outFitLight300(
+                                fontSize: 13, color: Colors.red),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      : const SizedBox()),
                   TextFieldCustom(
                       controller: controller.bioController,
                       title: LKey.bio.tr,

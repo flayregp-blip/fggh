@@ -27,6 +27,8 @@ class EditProfileScreenController extends BaseController {
   Map<String, bool> usernameCache = {};
   Timer? _debounce;
   RxBool isValidUserName = true.obs;
+  RxBool canChangeUsername = true.obs;
+  RxInt daysUntilCanChange = 0.obs;
   TextEditingController fullNameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
@@ -63,6 +65,28 @@ class EditProfileScreenController extends BaseController {
     phoneNumberController =
         TextEditingController(text: userData.value?.userMobileNo);
     links.value = userData.value?.links ?? [];
+    _checkCanChangeUsername();
+  }
+
+  void _checkCanChangeUsername() {
+    final updatedAt = userData.value?.updatedAt;
+    if (updatedAt == null) {
+      canChangeUsername.value = true;
+      return;
+    }
+    try {
+      final lastDate = DateTime.parse(updatedAt.toString());
+      final daysSince = DateTime.now().difference(lastDate).inDays;
+      if (daysSince < 30) {
+        canChangeUsername.value = false;
+        daysUntilCanChange.value = 30 - daysSince;
+      } else {
+        canChangeUsername.value = true;
+        daysUntilCanChange.value = 0;
+      }
+    } catch (_) {
+      canChangeUsername.value = true;
+    }
   }
 
   void onChangeProfileImage() async {
