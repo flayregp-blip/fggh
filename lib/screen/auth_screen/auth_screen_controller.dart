@@ -16,7 +16,7 @@ import 'package:shortzz/model/general/settings_model.dart';
 import 'package:shortzz/model/user_model/user_model.dart' as user;
 import 'package:shortzz/screen/dashboard_screen/dashboard_screen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class AuthScreenController extends BaseController {
   TextEditingController fullNameController = TextEditingController();
@@ -25,7 +25,7 @@ class AuthScreenController extends BaseController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
 
-  final supabase = Supabase.instance.client;
+  final supabase = supa.Supabase.instance.client;
 
   @override
   void onInit() {
@@ -90,7 +90,7 @@ class AuthScreenController extends BaseController {
     showLoader();
     try {
       await supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
+        supa.OAuthProvider.google,
         redirectTo: 'com.abdullah.flayr://login-callback',
       );
       // بعد الـ redirect، Supabase هيرجع الـ session
@@ -122,7 +122,7 @@ class AuthScreenController extends BaseController {
         scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
       );
       final response = await supabase.auth.signInWithIdToken(
-        provider: OAuthProvider.apple,
+        provider: supa.OAuthProvider.apple,
         idToken: appleCredential.identityToken ?? '',
         accessToken: appleCredential.authorizationCode,
       );
