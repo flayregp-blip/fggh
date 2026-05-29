@@ -95,10 +95,30 @@ class EditProfileScreenController extends BaseController {
     if (!isValidUserName.value) {
       return showSnackBar(LKey.validUsernameEmpty.tr);
     }
+
+    final currentUsername = SessionManager.instance.getUser()?.username ?? '';
+    final newUsername = usernameController.text.trim();
+    final bool usernameChanged = currentUsername.toLowerCase() != newUsername.toLowerCase();
+
+    // فحص 30 يوم لو حاول يغير الـ username
+    if (usernameChanged) {
+      final lastChanged = SessionManager.instance.getUser()?.updatedAt;
+      if (lastChanged != null) {
+        try {
+          final lastDate = DateTime.parse(lastChanged);
+          final daysSince = DateTime.now().difference(lastDate).inDays;
+          if (daysSince < 30) {
+            final daysLeft = 30 - daysSince;
+            return showSnackBar('يمكنك تغيير اسم المستخدم بعد $daysLeft يوم');
+          }
+        } catch (_) {}
+      }
+    }
+
     showLoader();
     User? userData = await UserService.instance.updateUserDetails(
         fullname: fullNameController.text.trim(),
-        userName: usernameController.text.trim(),
+        userName: newUsername,
         bio: bioController.text.trim(),
         email: emailController.text.trim(),
         profilePhoto: fileProfileImage.value,
@@ -109,6 +129,17 @@ class EditProfileScreenController extends BaseController {
         countryCode: phoneController.selectedCode.value?.countryCode);
     stopLoader();
     if (userData == null) return;
+
+    // شيل التوثيق لو غير الـ username
+    if (usernameChanged && (userData.isVerify ?? 0) == 1) {
+      userData = userData.copyWith(isVerify: 0, verifyType: 1);
+      await UserService.instance.updateUserDetails(
+        fullname: userData.fullname ?? '',
+        userName: newUsername,
+        isVerify: 0,
+      );
+    }
+
     onUpdateUser?.call(userData);
     if (Get.isRegistered<FeedScreenController>()) {
       final controller = Get.find<FeedScreenController>();
@@ -148,7 +179,7 @@ class EditProfileScreenController extends BaseController {
       return;
     }
     if (!GetUtils.isUsername(username)) {
-      isValidUserName.value = true;
+      isValidUserName.value = false;
       return;
     }
 
