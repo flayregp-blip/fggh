@@ -70,7 +70,9 @@ class SplashScreenController extends BaseController {
         SessionManager.instance.setFallbackLang(defaultLang.code ?? 'en');
       }
 
-      RestartWidget.restartApp(Get.context!);
+      if (!SessionManager.instance.isLogin()) {
+        RestartWidget.restartApp(Get.context!);
+      }
       if (SessionManager.instance.isLogin()) {
         UserService.instance.fetchUserDetails(userId: SessionManager.instance.getUserID()).then((value) {
           if (value != null) {
