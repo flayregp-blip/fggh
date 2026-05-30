@@ -159,8 +159,7 @@ class AuthScreenController extends BaseController {
       String? fullname,
       required LoginVia loginVia,
       String? password}) async {
-    String? deviceToken = await FirebaseNotificationManager.instance.getNotificationToken();
-    if (deviceToken == null) return null;
+    String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
     user.User? userData;
     switch (loginVia) {
       case LoginVia.loginInUser:
