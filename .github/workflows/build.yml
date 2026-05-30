@@ -26,7 +26,9 @@ jobs:
         env:
           GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=1g"
       - name: Get SHA-1
-        run: keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+        run: |
+          flutter build apk --debug 2>/dev/null || true
+          keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
       - uses: actions/upload-artifact@v4
         with:
           name: release-apk
