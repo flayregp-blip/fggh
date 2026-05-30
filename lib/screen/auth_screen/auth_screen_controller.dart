@@ -53,6 +53,7 @@ class AuthScreenController extends BaseController {
             deviceToken: deviceToken,
             fullName: fullname);
         Loggers.info('Google OAuth - resp: ${resp?.toJson()}');
+        stopLoader();
         if (resp != null) _navigateScreen(resp);
       }
     });
@@ -117,21 +118,6 @@ class AuthScreenController extends BaseController {
         supa.OAuthProvider.google,
         redirectTo: 'com.abdullah.flayr://login-callback',
       );
-      // بعد الـ redirect، Supabase هيرجع الـ session
-      final session = supabase.auth.currentSession;
-      if (session == null) {
-        stopLoader();
-        return;
-      }
-      final email = session.user.email ?? '';
-      final fullname = session.user.userMetadata?['full_name'] ?? email.split('@')[0];
-      final user.User? data = await _registration(
-          identity: email,
-          loginMethod: LoginMethod.google,
-          fullname: fullname,
-          loginVia: LoginVia.loginInUser);
-      stopLoader();
-      if (data != null) _navigateScreen(data);
     } catch (e) {
       Loggers.error(e);
       stopLoader();
