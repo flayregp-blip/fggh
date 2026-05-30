@@ -46,12 +46,13 @@ class AuthScreenController extends BaseController {
             ?? session.user.userMetadata?['name'] 
             ?? email.split('@')[0];
         String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-        String? userData2;
+        Loggers.info('Google OAuth - email: $email, fullname: $fullname, token: $deviceToken');
         final resp = await UserService.instance.logInUser(
             identity: email,
             loginMethod: LoginMethod.google,
             deviceToken: deviceToken,
             fullName: fullname);
+        Loggers.info('Google OAuth - resp: ${resp?.toJson()}');
         if (resp != null) _navigateScreen(resp);
       }
     });
