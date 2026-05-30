@@ -21,6 +21,8 @@ jobs:
         with:
           flutter-version: '3.41.9'
       - run: flutter pub get
+      - name: Get SHA-1
+        run: keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
       - name: Build APK
         run: flutter build apk --release
         env:
