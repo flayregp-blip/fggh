@@ -41,15 +41,18 @@ class AuthScreenController extends BaseController {
       final session = data.session;
       if (event == supa.AuthChangeEvent.signedIn && session != null) {
         final email = session.user.email ?? '';
+        if (email.isEmpty) return;
         final fullname = session.user.userMetadata?['full_name'] 
             ?? session.user.userMetadata?['name'] 
             ?? email.split('@')[0];
-        final userData = await _registration(
+        String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
+        String? userData2;
+        final resp = await UserService.instance.logInUser(
             identity: email,
             loginMethod: LoginMethod.google,
-            fullname: fullname,
-            loginVia: LoginVia.loginInUser);
-        if (userData != null) _navigateScreen(userData);
+            deviceToken: deviceToken,
+            fullName: fullname);
+        if (resp != null) _navigateScreen(resp);
       }
     });
   }
