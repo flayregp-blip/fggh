@@ -21,14 +21,15 @@ jobs:
         with:
           flutter-version: '3.41.9'
       - run: flutter pub get
+      - name: Create debug keystore and get SHA-1
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+          keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
       - name: Build APK
         run: flutter build apk --release
         env:
           GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=1g"
-      - name: Get SHA-1
-        run: |
-          flutter build apk --debug 2>/dev/null || true
-          keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
       - uses: actions/upload-artifact@v4
         with:
           name: release-apk
