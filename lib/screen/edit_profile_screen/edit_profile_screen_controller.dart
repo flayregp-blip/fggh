@@ -126,16 +126,19 @@ class EditProfileScreenController extends BaseController {
 
     // فحص 30 يوم لو حاول يغير الـ username
     if (usernameChanged) {
-      final lastChanged = SessionManager.instance.getUser()?.updatedAt;
-      if (lastChanged != null) {
-        try {
-          final lastDate = DateTime.parse(lastChanged);
-          final daysSince = DateTime.now().difference(lastDate).inDays;
-          if (daysSince < 30) {
-            final daysLeft = 30 - daysSince;
-            return showSnackBar('يمكنك تغيير اسم المستخدم بعد $daysLeft يوم');
-          }
-        } catch (_) {}
+      final isNewUser = SessionManager.instance.getUser()?.newRegister == true;
+      if (!isNewUser) {
+        final lastChanged = SessionManager.instance.getUser()?.updatedAt;
+        if (lastChanged != null) {
+          try {
+            final lastDate = DateTime.parse(lastChanged);
+            final daysSince = DateTime.now().difference(lastDate).inDays;
+            if (daysSince < 30) {
+              final daysLeft = 30 - daysSince;
+              return showSnackBar('يمكنك تغيير اسم المستخدم بعد $daysLeft يوم');
+            }
+          } catch (_) {}
+        }
       }
     }
 
