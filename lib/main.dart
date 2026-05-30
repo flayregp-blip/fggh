@@ -43,6 +43,9 @@ Future<void> main() async {
   await Supabase.initialize(
     url: 'https://jzausyutomjmvghiuogw.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YXVzeXV0b21qbXZnaGl1b2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUzNDgsImV4cCI6MjA5NDY2MTM0OH0.YvmP8PGiANmkCtennitwYWHwroK9fLwyiU6WDMVwYL0',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
     // Register background handler
