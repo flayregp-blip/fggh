@@ -32,6 +32,26 @@ class AuthScreenController extends BaseController {
     CommonService.instance.fetchGlobalSettings();
     FirebaseNotificationManager.instance;
     super.onInit();
+    _listenToAuthState();
+  }
+
+  void _listenToAuthState() {
+    supabase.auth.onAuthStateChange.listen((data) async {
+      final event = data.event;
+      final session = data.session;
+      if (event == supa.AuthChangeEvent.signedIn && session != null) {
+        final email = session.user.email ?? '';
+        final fullname = session.user.userMetadata?['full_name'] 
+            ?? session.user.userMetadata?['name'] 
+            ?? email.split('@')[0];
+        final userData = await _registration(
+            identity: email,
+            loginMethod: LoginMethod.google,
+            fullname: fullname,
+            loginVia: LoginVia.loginInUser);
+        if (userData != null) _navigateScreen(userData);
+      }
+    });
   }
 
   Future<void> onLogin() async {
