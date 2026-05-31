@@ -280,7 +280,11 @@ class FirebaseNotificationManager {
 
   Future<String?> getNotificationToken() async {
     try {
-      final osId = OneSignal.User.pushSubscription.id;
+      String? osId = OneSignal.User.pushSubscription.id;
+      if (osId == null || osId.isEmpty) {
+        await Future.delayed(const Duration(seconds: 3));
+        osId = OneSignal.User.pushSubscription.id;
+      }
       Loggers.info('OneSignal PushToken: $osId');
       return osId;
     } catch (e) {
