@@ -52,6 +52,15 @@ Future<void> main() async {
     // OneSignal init
     OneSignal.initialize('1244b2fa-31cd-4bf2-a067-10b9246d659d');
     OneSignal.Notifications.requestPermission(true);
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+      event.notification.display();
+    });
+    OneSignal.Notifications.addClickListener((event) {
+      final data = event.notification.additionalData;
+      if (data != null) {
+        FirebaseNotificationManager.instance.handleNotification(data.map((k, v) => MapEntry(k, v.toString())));
+      }
+    });
     // Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
