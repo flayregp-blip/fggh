@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
@@ -58,7 +59,7 @@ Future<void> main() async {
     OneSignal.Notifications.addClickListener((event) {
       final data = event.notification.additionalData;
       if (data != null) {
-        FirebaseNotificationManager.instance.handleNotification(data.map((k, v) => MapEntry(k, v.toString())));
+        FirebaseNotificationManager.instance.handleNotification(jsonEncode(data));
       }
     });
     // Register background handler
