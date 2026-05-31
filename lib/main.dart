@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -48,6 +49,9 @@ Future<void> main() async {
     ),
   );
 
+    // OneSignal init
+    OneSignal.initialize('1244b2fa-31cd-4bf2-a067-10b9246d659d');
+    OneSignal.Notifications.requestPermission(true);
     // Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 

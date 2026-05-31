@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -279,9 +280,9 @@ class FirebaseNotificationManager {
 
   Future<String?> getNotificationToken() async {
     try {
-      String? token = await FirebaseMessaging.instance.getToken();
-      Loggers.info('DeviceToken $token');
-      return token;
+      final osId = OneSignal.User.pushSubscription.id;
+      Loggers.info('OneSignal PushToken: $osId');
+      return osId;
     } catch (e) {
       Loggers.error('DeviceToken Exception $e');
       return null;
