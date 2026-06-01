@@ -40,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SettingLabel(title: LKey.personal.toUpperCase()),
+              SettingLabel(title: LKey.personal.tr.toUpperCase()),
               SettingIconTextWithArrow(
                 icon: AssetRes.icEdit,
                 title: LKey.editProfile,
@@ -92,7 +92,7 @@ class SettingsScreen extends StatelessWidget {
                   Get.to(() => const VerificationScreen());
                 },
               ),
-              SettingLabel(title: LKey.privacy.toUpperCase()),
+              SettingLabel(title: LKey.privacy.tr.toUpperCase()),
               Obx(
                 () => SettingIconTextWithArrow(
                   icon: AssetRes.icEye_1,
@@ -146,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
                   Get.to(() => const NotificationsPage());
                 },
               ),
-              SettingLabel(title: LKey.general.toUpperCase()),
+              SettingLabel(title: LKey.general.tr.toUpperCase()),
               // زرار تواصل مع الدعم
               SettingIconTextWithArrow(
                 icon: AssetRes.icMessage,
