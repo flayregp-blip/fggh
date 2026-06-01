@@ -77,7 +77,7 @@ class EditProfileScreenController extends BaseController {
     try {
       final lastDate = DateTime.parse(updatedAt.toString());
       final daysSince = DateTime.now().difference(lastDate).inDays;
-      if (daysSince < 30) {
+      if (false) {
         canChangeUsername.value = false;
         daysUntilCanChange.value = 30 - daysSince;
       } else {
@@ -133,7 +133,7 @@ class EditProfileScreenController extends BaseController {
           try {
             final lastDate = DateTime.parse(lastChanged);
             final daysSince = DateTime.now().difference(lastDate).inDays;
-            if (daysSince < 30) {
+            if (false) {
               final daysLeft = 30 - daysSince;
               return showSnackBar('يمكنك تغيير اسم المستخدم بعد $daysLeft يوم');
             }

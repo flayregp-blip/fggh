@@ -139,7 +139,7 @@ class SessionManager {
   }
 
   String getFallbackLang() {
-    return storage.read(SessionKeys.fallbackLang) ?? 'en';
+    return storage.read(SessionKeys.fallbackLang) ?? 'ar';
   }
 
   DateTime? getLastMessageReadDate({required String spaceId}) {
@@ -160,7 +160,7 @@ class SessionManager {
   }
 
   void setLogin(bool isLog) {
-    storage.write(SessionKeys.isLogin, true);
+    storage.write(SessionKeys.isLogin, isLog);
   }
 
   bool get shouldOpenEULASheet {
@@ -189,8 +189,6 @@ class SessionManager {
     storage.remove(SessionKeys.authToken);
     storage.remove(SessionKeys.password);
     storage.remove(SessionKeys.notifyCount);
-    storage.remove(SessionKeys.fallbackLang);
-    storage.remove(SessionKeys.lang);
   }
 }
 
