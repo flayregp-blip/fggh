@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shortzz/common/service/api/user_service.dart';
@@ -128,7 +127,6 @@ class SessionManager {
 
   void setLang(String langCode) {
     storage.write(SessionKeys.lang, langCode);
-    Get.updateLocale(Locale(langCode));
 
   }
 
