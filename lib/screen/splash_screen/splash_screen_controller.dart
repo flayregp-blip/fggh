@@ -128,7 +128,7 @@ class SplashScreenController extends BaseController {
 
   Future<void> downloadAndProcessLanguage(Language language, Map<String, Map<String, String>> languageData) async {
     try {
-      final response = await http.get(Uri.parse(language.csvFile?.addBaseURL() ?? ''));
+      final response = await http.get(Uri.parse(language.csvFile ?? ''));
       if (response.statusCode == 200) {
         final csvContent = utf8.decode(response.bodyBytes);
         // Parse the CSV into a map
