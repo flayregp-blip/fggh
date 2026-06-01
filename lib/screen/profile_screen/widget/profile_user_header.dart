@@ -231,6 +231,7 @@ class UserNameView extends StatelessWidget {
       children: [
         FullNameWithBlueTick(
           username: user?.username,
+          fullname: user?.fullname,
           style: TextStyleCustom.unboundedSemiBold600(color: textDarkGrey(context), fontSize: 17),
           isVerify: user?.isVerify,
           verifyType: user?.verifyType,
@@ -270,7 +271,7 @@ class UserNameView extends StatelessWidget {
                   ),
                 ),
         ),
-        Text(user?.fullname ?? '', style: TextStyleCustom.outFitLight300(color: textLightGrey(context), fontSize: 16))
+        Text('@${user?.username ?? ''}', style: TextStyleCustom.outFitLight300(color: textLightGrey(context), fontSize: 16))
       ],
     );
   }
