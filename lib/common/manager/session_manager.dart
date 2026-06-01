@@ -127,7 +127,7 @@ class SessionManager {
 
   void setLang(String langCode) {
     storage.write(SessionKeys.lang, langCode);
-    UserService.instance.updateUserDetails(appLanguage: langCode);
+
   }
 
   String getLang() {
