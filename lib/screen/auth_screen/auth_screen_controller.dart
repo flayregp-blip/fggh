@@ -117,7 +117,7 @@ class AuthScreenController extends BaseController {
       await supabase.auth.signInWithOAuth(
         supa.OAuthProvider.google,
         redirectTo: 'com.abdullah.flayr://login-callback',
-        authScreenLaunchMode: supa.LaunchMode.externalApplication,
+        authScreenLaunchMode: supa.LaunchMode.inAppWebView,
       );
     } catch (e) {
       Loggers.error(e);

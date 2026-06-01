@@ -74,6 +74,7 @@ class UserInfoHeader extends StatelessWidget {
             onTap: () => controller.onUserTap(user),
             child: FullNameWithBlueTick(
                 username: user?.username,
+                fullname: user?.fullname,
                 isVerify: user?.isVerify,
                 verifyType: user?.verifyType,
                 fontColor: whitePure(context),

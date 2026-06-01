@@ -49,6 +49,7 @@ class PostViewInfoHeader extends StatelessWidget {
             children: [
               FullNameWithBlueTick(
                 username: user?.username,
+                fullname: user?.fullname,
                 fontSize: 12,
                 iconSize: 18,
                 isVerify: user?.isVerify,

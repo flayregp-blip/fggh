@@ -10,6 +10,7 @@ final double? fontSize;
 final Color? fontColor;
 final String? icon;
 final String? username;
+final String? fullname;
 final MainAxisAlignment? mainAxisAlignment;
 final CrossAxisAlignment? crossAxisAlignment;
 final TextStyle? style;
@@ -21,6 +22,7 @@ final double opacity;
 const FullNameWithBlueTick(
 {super.key,
 required this.username,
+this.fullname,
 this.child,
 this.iconSize,
 this.fontSize,
@@ -111,7 +113,7 @@ mainAxisSize: MainAxisSize.min,
 children: [
 Flexible(
 child: Text(
-username ?? '',
+fullname ?? username ?? '',
 style: style ??
 TextStyleCustom.unboundedMedium500(
 color: fontColor ?? textDarkGrey(context),
