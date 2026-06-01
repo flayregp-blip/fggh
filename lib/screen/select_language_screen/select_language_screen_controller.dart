@@ -63,6 +63,7 @@ class SelectLanguageScreenController extends BaseController {
   void onLanguageChange(Language? value) {
     selectedLanguage.value = value;
     SessionManager.instance.setLang(value?.code ?? 'ar');
+    Get.updateLocale(Locale(value?.code ?? 'ar'));
     RestartWidget.restartApp(Get.context!);
   }
 }
