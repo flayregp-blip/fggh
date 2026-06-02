@@ -169,6 +169,7 @@ class AuthScreenController extends BaseController {
         userData = await UserService.instance.logInFakeUser(
             identity: identity, loginMethod: loginMethod, deviceToken: deviceToken, password: password);
     }
+  Loggers.success("APP_LANGUAGE => ${userData?.appLanguage}");
     Setting? setting = SessionManager.instance.getSettings();
     if (userData?.isDummy == 0 && userData?.newRegister == true && setting?.registrationBonusStatus == 1) {
       final translations = Get.find<DynamicTranslations>();
