@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 class DynamicTranslations extends Translations {
-  final Map<String, Map<String, String>> _keys = {};
+  static final Map<String, Map<String, String>> _keys = {};
 
   @override
   Map<String, Map<String, String>> get keys => _keys;
