@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) =>
           ScrollConfiguration(behavior: MyBehavior(), child: child!),
       translations: Get.find<DynamicTranslations>(),
-      locale: Locale(SessionManager.instance.getLang()),
+      locale: const Locale('ar'),
       fallbackLocale: Locale(SessionManager.instance.getFallbackLang()),
       themeMode: ThemeMode.light,
       darkTheme: ThemeRes.darkTheme(context),
