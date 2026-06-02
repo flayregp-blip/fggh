@@ -67,9 +67,9 @@ class SplashScreenController extends BaseController {
       var defaultLang = languages.firstWhereOrNull((element) => element.isDefault == 1);
 
       if (defaultLang != null) {
-        SessionManager.instance.setFallbackLang(defaultLang.code ?? 'ar');
+        SessionManager.instance.setFallbackLang('ar');
       if (!SessionManager.instance.isLogin() && SessionManager.instance.getLang() == SessionManager.instance.getFallbackLang()) {
-        SessionManager.instance.setLang(defaultLang.code ?? 'ar');
+        SessionManager.instance.setLang('ar');
       }
       }
 
