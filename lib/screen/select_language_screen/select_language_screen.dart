@@ -146,7 +146,9 @@ class SelectLanguageScreen extends StatelessWidget {
                   TextButtonCustom(
                     onTap: () {
                       SessionManager.instance.setBool(SessionKeys.isLanguageScreenSelect, true);
-                      SessionManager.instance.setLang(controller.selectedLanguage.value?.code ?? 'ar');
+                      final langCode = controller.selectedLanguage.value?.code ?? 'ar';
+                      SessionManager.instance.setLang(langCode);
+                      Get.updateLocale(Locale(langCode));
                       if ((controller.setting?.onBoarding ?? []).isEmpty) {
                         Get.off(() => const LoginScreen());
                       } else {
