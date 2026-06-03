@@ -63,6 +63,7 @@ class SplashScreenController extends BaseController {
       var downloadedFiles = await downloadAndParseLanguages(downloadLanguages);
 
       translations.addTranslations(downloadedFiles);
+      Get.updateLocale(Locale(SessionManager.instance.getLang()));
 
       var defaultLang = languages.firstWhereOrNull((element) => element.isDefault == 1);
 
