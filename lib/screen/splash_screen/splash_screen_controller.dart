@@ -69,15 +69,13 @@ class SplashScreenController extends BaseController {
       var defaultLang = languages.firstWhereOrNull((element) => element.isDefault == 1);
 
       if (defaultLang != null) {
-        SessionManager.instance.setFallbackLang('ar');
+        SessionManager.instance.setFallbackLang(defaultLang.code ?? 'ar');
       if (!SessionManager.instance.isLogin() && SessionManager.instance.getLang() == SessionManager.instance.getFallbackLang()) {
-        SessionManager.instance.setLang('ar');
+        SessionManager.instance.setLang(defaultLang.code ?? 'ar');
       }
       }
 
-      if (!SessionManager.instance.isLogin()) {
-        RestartWidget.restartApp(Get.context!);
-      }
+// removed restart loop
       if (SessionManager.instance.isLogin()) {
         UserService.instance.fetchUserDetails(userId: SessionManager.instance.getUserID()).then((value) {
           if (value != null) {
