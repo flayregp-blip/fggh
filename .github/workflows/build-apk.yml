@@ -1,0 +1,49 @@
+name: Build Flutter APK
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'lib/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'   # Compatible with your SDK ^3.5.4
+          channel: 'stable'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK (Release)
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: shortzz-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+
+      - name: Rename APK with version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d '+')
+          mv build/app/outputs/flutter-apk/app-release.apk shortzz-v${VERSION}.apk
+
+      - name: Upload renamed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: shortzz-apk
+          path: shortzz-v*.apk
+          retention-days: 30
