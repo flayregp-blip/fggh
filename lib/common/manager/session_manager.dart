@@ -7,7 +7,7 @@ import 'package:shortzz/utilities/app_res.dart';
 
 class SessionManager {
   static var instance = SessionManager();
-  var storage = GetStorage('shortzz');
+  var storage = GetStorage('flayr');
   var conversationId = '';
   RxInt notifyCount = 0.obs;
   RxInt isModerator = 0.obs;
@@ -78,15 +78,9 @@ class SessionManager {
 
   void setUser(User? user) {
     if (user != null) {
-      // Convert the object to a JSON map and set 'stories' to null
       Map<String, dynamic> json = user.toJson();
       json['stories'] = null;
-
-      // Re-create the User object from the modified JSON map
       User newUser = User.fromJson(json);
-
-      // Log the updated user object and store it
-      // Loggers.success(user.toJson());
       storage.write(SessionKeys.user, newUser);
     }
   }
@@ -128,7 +122,6 @@ class SessionManager {
   void setLang(String langCode) async {
     storage.write(SessionKeys.lang, langCode);
     await storage.save();
-
   }
 
   String getLang() {
