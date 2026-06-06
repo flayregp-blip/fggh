@@ -59,7 +59,6 @@ class ReelsScreenController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    // pageController = PageController(initialPage: position.value);
     WakelockPlus.enable();
   }
 
@@ -72,68 +71,44 @@ class ReelsScreenController extends BaseController {
   }
 
   Future<void> initVideoPlayer() async {
-    /// Initialize 1st video
     await _initializeControllerAtIndex(position.value);
-
-    /// Play 1st video
     _playControllerAtIndex(position.value);
 
-    /// Initialize 2nd vide
-    if (position >= 0) {
+    if (position.value > 0) {
       await _initializeControllerAtIndex(position.value - 1);
     }
     await _initializeControllerAtIndex(position.value + 1);
   }
 
   void onPageChanged(int index) {
-    if (index > position.value) {
-      _fetchMoreData();
-      _playNextReel(index);
-    } else {
-      _playPreviousReel(index);
-    }
     position.value = index;
 
+    if (index > position.value) {
+      _fetchMoreData();
+    }
+
     _playControllerAtIndex(index);
+    _initializeControllerAtIndex(index + 1);
+    _initializeControllerAtIndex(index - 1);
+    _disposeAllExcept(index);
   }
 
   Future<void> _fetchMoreData() async {
-    if (position >= reels.length - 3) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        await onFetchMoreData?.call().then((value) {
-          _initializeControllerAtIndex(position.value + 1);
-        });
+    if (position.value >= reels.length - 3 && onFetchMoreData != null) {
+      Future.delayed(const Duration(milliseconds: 800), () async {
+        await onFetchMoreData!.call();
+        _initializeControllerAtIndex(position.value + 1);
       });
     }
   }
 
-  void _playNextReel(int index) {
-    pauseAllPlayers();
-    _initializeControllerAtIndex(index);
-    _initializeControllerAtIndex(index + 1);
-    _initializeControllerAtIndex(index - 1);
-
-    _disposeAllExcept(index);
-  }
-
-  void _playPreviousReel(int index) {
-    pauseAllPlayers();
-    _initializeControllerAtIndex(index);
-    _initializeControllerAtIndex(index + 1);
-    _initializeControllerAtIndex(index - 1);
-
-    _disposeAllExcept(index);
-  }
-
   void _disposeAllExcept(int index) {
     final validIndexes = {index - 1, index, index + 1};
-
-    final keys = players.keys.toList(); // 👈 COPY
+    final keys = players.keys.toList();
 
     for (final i in keys) {
       if (!validIndexes.contains(i)) {
         _disposeControllerAtIndex(i);
-        players.remove(i);
       }
     }
   }
@@ -144,7 +119,6 @@ class ReelsScreenController extends BaseController {
     if (entry.status == PlayerStatus.disposed || entry.status == PlayerStatus.none) return;
 
     final controller = entry.controller;
-
     if (controller != null) {
       if (entry.listener != null) {
         controller.removeListener(entry.listener!);
@@ -165,26 +139,22 @@ class ReelsScreenController extends BaseController {
   Future<void> _initializeControllerAtIndex(int index) async {
     if (index < 0 || index >= reels.length) return;
 
-    /// 🔒 HARD GUARD (no race possible)
-    if (players[index]?.status == PlayerStatus.initializing ||
-        players[index]?.status == PlayerStatus.initialized) {
+    final currentEntry = players[index];
+    if (currentEntry != null &&
+        (currentEntry.status == PlayerStatus.initializing || currentEntry.status == PlayerStatus.initialized)) {
       return;
     }
 
-    /// 🔒 Mark initializing IMMEDIATELY
     players[index] = ReelPlayerEntry(status: PlayerStatus.initializing);
+
     try {
       late VideoPlayerController controller;
 
       final reel = reels[index];
       if (reel.id == -1) {
-        controller = VideoPlayerController.file(
-          File(reel.video ?? ''),
-        );
+        controller = VideoPlayerController.file(File(reel.video ?? ''));
       } else {
-        controller = VideoPlayerController.networkUrl(
-          Uri.parse(reel.video?.addBaseURL() ?? ''),
-        );
+        controller = VideoPlayerController.networkUrl(Uri.parse(reel.video?.addBaseURL() ?? ''));
       }
 
       await controller.initialize();
@@ -201,30 +171,32 @@ class ReelsScreenController extends BaseController {
         _playControllerAtIndex(index);
       }
     } catch (e) {
-      Loggers.error("❌ INIT FAILED $index $e");
-
+      Loggers.error("❌ INIT FAILED $index : $e");
       _disposeControllerAtIndex(index);
     }
   }
 
   void _playControllerAtIndex(int index) {
+    // Only play if this reels page is the active tab in dashboard
     final dashController = Get.find<DashboardScreenController>();
-    if (reelPageType == ReelPageType.home && dashController.selectedPageIndex.value != 0) {
+    if (reelPageType == ReelPageType.home && dashController.selectedPageIndex.value != 1) {
       return;
     }
+
+    if (!isCurrentPageVisible) return;
 
     final entry = players[index];
     final controller = entry?.controller;
 
-    if (controller == null) return;
-    if (!controller.value.isInitialized) return;
+    if (controller == null || !controller.value.isInitialized) return;
 
     controller.play();
 
     DebounceAction.shared.call(milliseconds: 3000, () {
       _increaseViewsCount(reels[index]);
     });
-    Loggers.info('🚀🚀🚀 PLAYING $index');
+
+    Loggers.info('▶️ PLAYING $index');
   }
 
   void _increaseViewsCount(Post reelData) {
@@ -239,45 +211,44 @@ class ReelsScreenController extends BaseController {
   }
 
   void pauseAllPlayers() {
-    final keys = players.keys.toList(); // 👈 COPY
+    final keys = players.keys.toList();
     for (var i in keys) {
       _stopControllerAtIndex(i);
     }
   }
 
   void _stopControllerAtIndex(int index) {
-    if (reels.length > index && index >= 0) {
-      final controller = players[index]?.controller;
-      if (controller != null) {
-        controller.pause();
-        controller.seekTo(const Duration()); // Reset position
-        Loggers.info('🚀🚀🚀 STOPPED $index');
-      }
+    if (index < 0 || index >= reels.length) return;
+
+    final controller = players[index]?.controller;
+    if (controller != null) {
+      controller.pause();
+      controller.seekTo(const Duration());
+      Loggers.info('⏸ STOPPED $index');
     }
   }
 
   Future<void> disposeAllController() async {
-    final entries = players.entries.toList(); // 👈 COPY
+    final entries = players.entries.toList();
     for (var entry in entries) {
       final controller = entry.value.controller;
-      final listener = entry.value.listener;
-      if (listener != null) {
-        controller?.removeListener(listener);
+      if (entry.value.listener != null && controller != null) {
+        controller.removeListener(entry.value.listener!);
       }
-      controller?.pause();
+      await controller?.pause();
       await controller?.dispose();
       entry.value.controller = null;
     }
     players.clear();
   }
 
-  /// Handle refresh logic
   Future<void> handleRefresh(Future<void> Function()? onRefresh) async {
     if (isRefreshing.value) return;
     isRefreshing.value = true;
 
     await onRefresh?.call();
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 300));
+
     if (reels.isNotEmpty) {
       position.value = 0;
       pageController.jumpToPage(0);
@@ -290,15 +261,16 @@ class ReelsScreenController extends BaseController {
   }
 
   void onReportTap() {
-    Get.bottomSheet(ReportSheet(reportType: ReportType.post, id: reels[position.value].id?.toInt()),
-        isScrollControlled: true);
+    Get.bottomSheet(
+      ReportSheet(reportType: ReportType.post, id: reels[position.value].id?.toInt()),
+      isScrollControlled: true,
+    );
   }
 
   void onUpdateComment(Comment comment, bool isReplyComment) {
     final post = reels.firstWhereOrNull((e) => e.id == comment.postId);
-    if (post == null) {
-      return Loggers.error('Post not found');
-    }
+    if (post == null) return;
+
     final controllerTag = post.id.toString();
     if (Get.isRegistered<ReelController>(tag: controllerTag)) {
       Get.find<ReelController>(tag: controllerTag)
@@ -309,34 +281,29 @@ class ReelsScreenController extends BaseController {
 
   void openPostOptionsSheet() {
     const tag = ProfileScreenController.tag;
-
     final controller = Get.isRegistered<ProfileScreenController>(tag: tag)
         ? Get.find<ProfileScreenController>(tag: tag)
-        : Get.put(ProfileScreenController(SessionManager.instance.getUser().obs, (user) {}),
-            tag: tag);
+        : Get.put(ProfileScreenController(SessionManager.instance.getUser().obs, (user) {}), tag: tag);
 
     Get.bottomSheet(
-        PostOptionsSheet(
-          controller: controller,
-          onChanged: (type) {
-            if (type == PublishType.goLive) {
-              Future.delayed(
-                const Duration(seconds: 1),
-                () {
-                  final controller = Get.find<DashboardScreenController>();
-                  controller.onChanged(2);
-                },
-              );
-            }
-          },
-        ),
-        isScrollControlled: true);
+      PostOptionsSheet(
+        controller: controller,
+        onChanged: (type) {
+          if (type == PublishType.goLive) {
+            Future.delayed(const Duration(seconds: 1), () {
+              Get.find<DashboardScreenController>().onChanged(2);
+            });
+          }
+        },
+      ),
+      isScrollControlled: true,
+    );
   }
 
   onUpdateReelData(Post reel) {
     final index = reels.indexWhere((element) => element.id == reel.id);
     if (index != -1) {
-      reels[index] = reel; // ✅ update field only
+      reels[index] = reel;
     }
   }
 }
