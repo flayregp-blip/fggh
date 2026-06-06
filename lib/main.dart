@@ -69,7 +69,7 @@ Future<void> main() async {
     // Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    await GetStorage.init('shortzz');
+    await GetStorage.init('flayr');
 
     // Init RevenueCat (handle errors gracefully)
     try {
