@@ -1,4 +1,4 @@
-name: shortzz
+name: flayr
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -236,7 +236,7 @@ flutter:
           weight: 200
     - family: Unbounded-Light
       fonts:
-        - asset: assets/fonts/Unbounded-Light.ttf
+        - asset: assets/fonts/Unbounded-ExtraLight.ttf
           weight: 300
     - family: Unbounded-Medium
       fonts:
