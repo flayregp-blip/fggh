@@ -19,6 +19,7 @@ import 'package:shortzz/common/widget/restart_widget.dart';
 import 'package:shortzz/languages/dynamic_translations.dart';
 import 'package:shortzz/screen/splash_screen/splash_screen.dart';
 import 'package:shortzz/utilities/theme_res.dart';
+import 'package:shortzz/utilities/const_res.dart';
 
 import 'common/service/network_helper/network_helper.dart';
 
@@ -27,10 +28,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   Loggers.success("Handling a background message: ${message.data}");
   await Firebase.initializeApp();
 
-  await Supabase.initialize(
-    url: 'https://jzausyutomjmvghiuogw.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YXVzeXV0b21qbXZnaGl1b2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUzNDgsImV4cCI6MjA5NDY2MTM0OH0.YvmP8PGiANmkCtennitwYWHwroK9fLwyiU6WDMVwYL0',
-  );
+  try {
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+  } catch (_) {}
+
   if (Platform.isIOS) {
     FirebaseNotificationManager.instance.showNotification(message);
   }
@@ -42,16 +46,16 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp();
 
-  await Supabase.initialize(
-    url: 'https://jzausyutomjmvghiuogw.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6YXVzeXV0b21qbXZnaGl1b2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUzNDgsImV4cCI6MjA5NDY2MTM0OH0.YvmP8PGiANmkCtennitwYWHwroK9fLwyiU6WDMVwYL0',
-    authOptions: const FlutterAuthClientOptions(
-      authFlowType: AuthFlowType.pkce,
-    ),
-  );
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce,
+      ),
+    );
 
     // OneSignal init
-    OneSignal.initialize('1244b2fa-31cd-4bf2-a067-10b9246d659d');
+    OneSignal.initialize(oneSignalAppId);
     OneSignal.Notifications.requestPermission(true);
     OneSignal.Notifications.addForegroundWillDisplayListener((event) {
       event.notification.display();
