@@ -2,22 +2,13 @@ name: Build Flayr APK
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-          - release
-          - debug
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -29,24 +20,19 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
+          flutter-version: '3.24.3'
           channel: 'stable'
           cache: true
 
-      - name: Get Flutter dependencies
+      - name: Get dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: |
-          if [ "${{ github.event.inputs.build_type || 'release' }}" == "release" ]; then
-            flutter build apk --release
-          else
-            flutter build apk --debug
-          fi
+      - name: Build Release APK
+        run: flutter build apk --release
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: flayr-apk-${{ github.event.inputs.build_type || 'release' }}
-          path: build/app/outputs/flutter-apk/*.apk
+          name: flayr-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
