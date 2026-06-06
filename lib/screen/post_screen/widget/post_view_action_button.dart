@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shortzz/common/extensions/common_extension.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
 import 'package:shortzz/model/post_story/post_model.dart';
 import 'package:shortzz/screen/post_screen/post_screen_controller.dart';
-import 'package:shortzz/utilities/color_res.dart';
-import 'package:shortzz/utilities/text_style_custom.dart';
-import 'package:shortzz/utilities/theme_res.dart';
 
 class PostViewActionButton extends StatelessWidget {
   final Post post;
@@ -22,95 +18,87 @@ class PostViewActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Wrap(
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          PostViewIconWithCount(
-              key: likeKey,
-              onTap: () => controller.onLike(post),
-              color: post.isLiked ?? false ? ColorRes.likeRed : null,
-              icon: post.isLiked ?? false
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_outline_rounded,
-              count: post.likes),
+          // Views
+          _buildActionItem(
+            icon: Icons.remove_red_eye_outlined,
+            count: post.views ?? 0,
+            onTap: null,
+          ),
+
+          // Likes
+          _buildActionItem(
+            icon: (post.isLiked ?? false) ? Icons.favorite : Icons.favorite_border,
+            count: post.likes ?? 0,
+            color: (post.isLiked ?? false) ? Colors.red : null,
+            onTap: () => controller.onLike(post),
+          ),
+
+          // Comments
           if (post.canComment == 1)
-            PostViewIconWithCount(
-                onTap: controller.onComment,
-                icon: Icons.chat_bubble_outline_rounded,
-                count: post.comments),
-          PostViewIconWithCount(
-              onTap: () {},
-              icon: Icons.visibility_outlined,
-              count: post.views),
-          PostViewIconWithCount(
-              onTap: () => controller.onSaved(post),
-              icon: post.isSaved ?? false
-                  ? Icons.bookmark_rounded
-                  : Icons.bookmark_border_rounded,
-              count: post.saves),
+            _buildActionItem(
+              icon: Icons.chat_bubble_outline,
+              count: post.comments ?? 0,
+              onTap: controller.onComment,
+            ),
+
+          // Save
+          _buildActionItem(
+            icon: (post.isSaved ?? false) ? Icons.bookmark : Icons.bookmark_border,
+            count: post.saves ?? 0,
+            onTap: () => controller.onSaved(post),
+          ),
+
+          // Gift
           if (post.userId != SessionManager.instance.getUserID())
-            PostViewIconWithCount(
+            _buildActionItem(
+              icon: Icons.card_giftcard_outlined,
+              count: null,
               onTap: () => controller.onGiftTap(post),
-              icon: Icons.card_giftcard_rounded,
-              isCountVisible: false,
+              showCount: false,
             ),
         ],
       ),
     );
   }
-}
 
-class PostViewIconWithCount extends StatelessWidget {
-  final IconData icon;
-  final num? count;
-  final VoidCallback onTap;
-  final Color? color;
-  final bool isCountVisible;
-  final Key? likeKey;
-
-  const PostViewIconWithCount(
-      {super.key,
-      required this.icon,
-      this.count,
-      required this.onTap,
-      this.color,
-      this.isCountVisible = true,
-      this.likeKey});
-
-  @override
-  Widget build(BuildContext context) {
-    final iconColor = color ?? textDarkGrey(context);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 5,
-      children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(2),
-            child: Icon(
+  Widget _buildActionItem({
+    required IconData icon,
+    int? count,
+    Color? color,
+    required VoidCallback? onTap,
+    bool showCount = true,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
               icon,
-              key: likeKey,
-              color: iconColor,
-              size: 25,
+              size: 22,
+              color: color ?? Colors.grey[700],
             ),
-          ),
+            if (showCount && count != null) ...[
+              const SizedBox(width: 5),
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ],
         ),
-        if (isCountVisible)
-          SizedBox(
-            width: 35,
-            child: Text(
-              (count ?? 0).numberFormat,
-              style: TextStyleCustom.outFitRegular400(
-                  fontSize: 12.5, color: textDarkGrey(context)),
-            ),
-          )
-      ],
+      ),
     );
   }
 }
