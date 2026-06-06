@@ -125,8 +125,9 @@ class SessionManager {
     return null;
   }
 
-  void setLang(String langCode) {
+  void setLang(String langCode) async {
     storage.write(SessionKeys.lang, langCode);
+    await storage.save();
 
   }
 
