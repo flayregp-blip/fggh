@@ -25,6 +25,8 @@ class AuthScreenController extends BaseController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   @override
   void onInit() {
     CommonService.instance.fetchGlobalSettings();
@@ -67,7 +69,7 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         stopLoader();
         return;
