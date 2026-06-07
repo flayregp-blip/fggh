@@ -1,7 +1,7 @@
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shortzz/common/controller/base_controller.dart';
 import 'package:shortzz/common/functions/debounce_action.dart';
 import 'package:shortzz/common/manager/firebase_notification_manager.dart';
@@ -63,34 +63,15 @@ class AuthScreenController extends BaseController {
     }
   }
 
-  // ==================== NATIVE GOOGLE SIGN IN ====================
+  // ==================== SUPABASE GOOGLE SIGN IN ====================
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ["email"]).signIn();
-      if (googleUser == null) {
-        stopLoader();
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+      await supa.auth.signInWithOAuth(
+        supa.OAuthProvider.google,
+        redirectTo: 'com.abdullah.flayr://login-callback',
+        authScreenLaunchMode: supa.LaunchMode.inAppWebView,
       );
-
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      final email = userCredential.user?.email ?? '';
-      final fullname = userCredential.user?.displayName ?? email.split('@')[0];
-
-      final user.User? data = await _logInUser(
-          identity: email, loginMethod: LoginMethod.google, fullname: fullname);
-
-      stopLoader();
-      if (data != null) _navigateScreen(data);
     } catch (e) {
       Loggers.error(e);
       stopLoader();
@@ -223,7 +204,7 @@ class AuthScreenController extends BaseController {
     if (fullName.isEmpty) return showSnackBar(LKey.enterFullName.tr);
     if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
     if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
-    if (password != confirmPassword) return showSnackBar(LKey.passwordNotMatch.tr);
+    if (password != confirmPassword) return showSnackBar(LKey.passwordDoNotMatch.tr);
 
     showLoader();
     final UserCredential? credential = await createUserWithEmailAndPassword();
