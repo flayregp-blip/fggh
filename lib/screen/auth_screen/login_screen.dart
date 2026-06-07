@@ -58,13 +58,14 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 75),
+                          const SizedBox(height: 60),
+                          // ===== الحقول بتصميم أقوى =====
                           LoginSheetTextField(
                             hintText: LKey.enterYourEmail.tr,
                             controller: controller.emailController,
                             keyboardType: TextInputType.emailAddress,
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 16),
                           LoginSheetTextField(
                             isPasswordField: true,
                             hintText: LKey.enterPassword.tr,
@@ -110,7 +111,7 @@ class LoginScreen extends StatelessWidget {
                         height: 48,
                         margin: const EdgeInsets.symmetric(vertical: 25),
                         alignment: Alignment.center,
-                        color: whitePure(context).withValues(alpha: .15),
+                        color: whitePure(context).withValues(alpha: .12),
                         child: Text(
                           LKey.createAccountHere.tr,
                           style: TextStyleCustom.outFitRegular400(
@@ -190,14 +191,14 @@ class _LoginSheetTextFieldState extends State<LoginSheetTextField> {
     return Container(
       decoration: ShapeDecoration(
         shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
-          side: BorderSide(color: whitePure(context).withValues(alpha: .5), width: 1),
+          borderRadius: SmoothBorderRadius(cornerRadius: 14, cornerSmoothing: 1),
+          side: BorderSide(color: whitePure(context).withValues(alpha: .6), width: 1.5),
         ),
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Colors.white.withValues(alpha: 0.12), // ← خليناها أقوى
       ),
       child: TextField(
         controller: widget.controller,
-        style: TextStyleCustom.outFitRegular400(color: whitePure(context), fontSize: 16),
+        style: TextStyleCustom.outFitRegular400(color: whitePure(context), fontSize: 17),
         onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
         obscureText: widget.isPasswordField && isHide,
         keyboardType: widget.keyboardType ?? TextInputType.text,
@@ -205,10 +206,10 @@ class _LoginSheetTextFieldState extends State<LoginSheetTextField> {
           border: InputBorder.none,
           hintText: widget.hintText,
           hintStyle: TextStyleCustom.outFitRegular400(
-            color: whitePure(context).withValues(alpha: .6),
+            color: whitePure(context).withValues(alpha: .55),
             fontSize: 16,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
           suffixIcon: widget.isPasswordField
               ? InkWell(
                   onTap: () {
@@ -217,8 +218,8 @@ class _LoginSheetTextFieldState extends State<LoginSheetTextField> {
                   },
                   child: Icon(
                     isHide ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: whitePure(context).withValues(alpha: .7),
-                    size: 22,
+                    color: whitePure(context).withValues(alpha: .75),
+                    size: 24,
                   ),
                 )
               : null,
@@ -240,14 +241,14 @@ class SocialBtn extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 56,
-        width: 56,
-        decoration: BoxDecoration(
+        height: 58,
+        width: 58,
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
         ),
         alignment: Alignment.center,
-        child: Image.asset(icon, height: 28, width: 28),
+        child: Image.asset(icon, height: 30, width: 30),
       ),
     );
   }
