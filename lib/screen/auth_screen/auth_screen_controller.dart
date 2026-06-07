@@ -1,4 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -67,10 +67,10 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      await supa.auth.signInWithOAuth(
-        supa.OAuthProvider.google,
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
         redirectTo: 'com.abdullah.flayr://login-callback',
-        authScreenLaunchMode: supa.LaunchMode.inAppWebView,
+        authScreenLaunchMode: LaunchMode.inAppWebView,
       );
     } catch (e) {
       Loggers.error(e);
@@ -204,7 +204,7 @@ class AuthScreenController extends BaseController {
     if (fullName.isEmpty) return showSnackBar(LKey.enterFullName.tr);
     if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
     if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
-    if (password != confirmPassword) return showSnackBar(LKey.passwordDoNotMatch.tr);
+    if (password != confirmPassword) return showSnackBar(LKey.passwordMismatch.tr);
 
     showLoader();
     final UserCredential? credential = await createUserWithEmailAndPassword();
