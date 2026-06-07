@@ -25,8 +25,6 @@ class AuthScreenController extends BaseController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
   @override
   void onInit() {
     CommonService.instance.fetchGlobalSettings();
@@ -55,13 +53,11 @@ class AuthScreenController extends BaseController {
       }
 
       String fullname = credential.user?.displayName ?? email.split('@')[0];
-      final user.User? data = await _logInUser(
-          identity: email, loginMethod: LoginMethod.email, fullname: fullname);
+      final user.User? data = await _logInUser(identity: email, loginMethod: LoginMethod.email, fullname: fullname);
       stopLoader();
       if (data != null) _navigateScreen(data);
     } else {
-      final user.User? data = await _logInFakeUser(
-          identity: email, loginMethod: LoginMethod.email, password: password);
+      final user.User? data = await _logInFakeUser(identity: email, loginMethod: LoginMethod.email, password: password);
       stopLoader();
       if (data != null) _navigateScreen(data);
     }
@@ -71,7 +67,7 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         stopLoader();
         return;
