@@ -100,16 +100,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentLang = SessionManager.instance.getLang();
+    final isArabic = currentLang == 'ar';
+    
     return GetMaterialApp(
       builder: (context, child) =>
           ScrollConfiguration(behavior: MyBehavior(), child: child!),
       translations: Get.find<DynamicTranslations>(),
-      locale: Locale(SessionManager.instance.getLang()),
+      locale: Locale(currentLang),
       fallbackLocale: Locale(SessionManager.instance.getFallbackLang()),
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       themeMode: ThemeMode.light,
       darkTheme: ThemeRes.darkTheme(context),
       theme: ThemeRes.lightTheme(context),
       debugShowCheckedModeBanner: false,
+      supportedLocales: const [
+        Locale('ar', 'SA'),
+        Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        // Add any additional localization delegates if needed
+      ],
       home: const SplashScreen(),
     );
   }

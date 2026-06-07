@@ -63,8 +63,21 @@ class SelectLanguageScreenController extends BaseController {
 
   void onLanguageChange(Language? value) {
     selectedLanguage.value = value;
-    SessionManager.instance.setLang(value?.code ?? 'ar');
-    Get.updateLocale(Locale(value?.code ?? 'ar'));
-    SessionManager.instance.storage.save().then((_) { RestartWidget.restartApp(Get.context!); });
+    final langCode = value?.code ?? 'ar';
+    SessionManager.instance.setLang(langCode);
+    
+    // Update locale and text direction
+    Get.updateLocale(Locale(langCode));
+    
+    // Update text direction based on language
+    if (Get.context != null) {
+      final isArabic = langCode == 'ar';
+      final textDirection = isArabic ? TextDirection.rtl : TextDirection.ltr;
+      // This will be applied when the app restarts
+    }
+    
+    SessionManager.instance.storage.save().then((_) { 
+      RestartWidget.restartApp(Get.context!); 
+    });
   }
 }

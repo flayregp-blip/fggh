@@ -54,7 +54,7 @@ extension StringExtention on String {
       await Clipboard.setData(ClipboardData(text: this));
       BaseController.share.showSnackBar(LKey.copiedToClipboard.tr);
     } catch (e) {
-      BaseController.share.showSnackBar('Failed to copy to clipboard');
+      BaseController.share.showSnackBar('FailedToCopy'.tr);
     }
   }
 
