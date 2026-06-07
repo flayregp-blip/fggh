@@ -56,12 +56,12 @@ class AuthScreenController extends BaseController {
 
       String fullname = credential.user?.displayName ?? email.split('@')[0];
       final user.User? data = await _logInUser(
-          identity: email, loginMethod: 'email', fullname: fullname);
+          identity: email, loginMethod: LoginMethod.email, fullname: fullname);
       stopLoader();
       if (data != null) _navigateScreen(data);
     } else {
       final user.User? data = await _logInFakeUser(
-          identity: email, loginMethod: 'email', password: password);
+          identity: email, loginMethod: LoginMethod.email, password: password);
       stopLoader();
       if (data != null) _navigateScreen(data);
     }
@@ -91,7 +91,7 @@ class AuthScreenController extends BaseController {
       final fullname = userCredential.user?.displayName ?? email.split('@')[0];
 
       final user.User? data = await _logInUser(
-          identity: email, loginMethod: 'google', fullname: fullname);
+          identity: email, loginMethod: LoginMethod.google, fullname: fullname);
 
       stopLoader();
       if (data != null) _navigateScreen(data);
@@ -122,7 +122,7 @@ class AuthScreenController extends BaseController {
 
       final user.User? data = await _logInUser(
           identity: email.isNotEmpty ? email : userCredential.user?.uid ?? '',
-          loginMethod: 'apple',
+          loginMethod: LoginMethod.apple,
           fullname: fullname.isNotEmpty ? fullname : 'Apple User');
 
       stopLoader();
@@ -137,7 +137,7 @@ class AuthScreenController extends BaseController {
   // ==================== Helper Methods ====================
   Future<user.User?> _logInUser({
     required String identity,
-    required String loginMethod,
+    required LoginMethod loginMethod,
     String? fullname,
   }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
@@ -150,7 +150,7 @@ class AuthScreenController extends BaseController {
 
   Future<user.User?> _logInFakeUser({
     required String identity,
-    required String loginMethod,
+    required LoginMethod loginMethod,
     String? password,
   }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
