@@ -86,6 +86,7 @@ Future<void> main() async {
 
     // Load Translations
     Get.put(DynamicTranslations());
+  Get.find<DynamicTranslations>().loadInitialTranslations();
 
     // Run app
     runApp(const RestartWidget(child: MyApp()));
