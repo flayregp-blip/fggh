@@ -17,7 +17,6 @@ import 'package:shortzz/model/general/settings_model.dart';
 import 'package:shortzz/model/user_model/user_model.dart' as user;
 import 'package:shortzz/screen/dashboard_screen/dashboard_screen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class AuthScreenController extends BaseController {
   TextEditingController fullNameController = TextEditingController();
@@ -26,13 +25,11 @@ class AuthScreenController extends BaseController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
 
-  final supabase = supa.Supabase.instance.client;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   void onInit() {
     CommonService.instance.fetchGlobalSettings();
-    FirebaseNotificationManager.instance;
     super.onInit();
   }
 
@@ -58,19 +55,13 @@ class AuthScreenController extends BaseController {
       }
 
       String fullname = credential.user?.displayName ?? email.split('@')[0];
-      final user.User? data = await _registration(
-          identity: email,
-          loginMethod: LoginMethod.email,
-          fullname: fullname,
-          loginVia: LoginVia.loginInUser);
+      final user.User? data = await _logInUser(
+          identity: email, loginMethod: 'email', fullname: fullname);
       stopLoader();
       if (data != null) _navigateScreen(data);
     } else {
-      final user.User? data = await _registration(
-          identity: email,
-          loginMethod: LoginMethod.email,
-          loginVia: LoginVia.logInFakeUser,
-          password: password);
+      final user.User? data = await _logInFakeUser(
+          identity: email, loginMethod: 'email', password: password);
       stopLoader();
       if (data != null) _navigateScreen(data);
     }
@@ -99,13 +90,8 @@ class AuthScreenController extends BaseController {
       final email = userCredential.user?.email ?? '';
       final fullname = userCredential.user?.displayName ?? email.split('@')[0];
 
-      String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-
-      final user.User? data = await _registration(
-          identity: email,
-          loginMethod: LoginMethod.google,
-          fullname: fullname,
-          loginVia: LoginVia.loginInUser);
+      final user.User? data = await _logInUser(
+          identity: email, loginMethod: 'google', fullname: fullname);
 
       stopLoader();
       if (data != null) _navigateScreen(data);
@@ -134,11 +120,10 @@ class AuthScreenController extends BaseController {
       final email = userCredential.user?.email ?? appleCredential.email ?? '';
       final fullname = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
 
-      final user.User? data = await _registration(
+      final user.User? data = await _logInUser(
           identity: email.isNotEmpty ? email : userCredential.user?.uid ?? '',
-          loginMethod: LoginMethod.apple,
-          fullname: fullname.isNotEmpty ? fullname : 'Apple User',
-          loginVia: LoginVia.loginInUser);
+          loginMethod: 'apple',
+          fullname: fullname.isNotEmpty ? fullname : 'Apple User');
 
       stopLoader();
       if (data != null) _navigateScreen(data);
@@ -149,53 +134,31 @@ class AuthScreenController extends BaseController {
     }
   }
 
-  // ==================== باقي الدوال (Registration + Navigation) ====================
-  Future<user.User?> _registration({
+  // ==================== Helper Methods ====================
+  Future<user.User?> _logInUser({
     required String identity,
-    required LoginMethod loginMethod,
+    required String loginMethod,
     String? fullname,
-    required LoginVia loginVia,
+  }) async {
+    String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
+    return await UserService.instance.logInUser(
+        identity: identity,
+        loginMethod: loginMethod,
+        deviceToken: deviceToken,
+        fullName: fullname);
+  }
+
+  Future<user.User?> _logInFakeUser({
+    required String identity,
+    required String loginMethod,
     String? password,
   }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-
-    user.User? userData;
-
-    switch (loginVia) {
-      case LoginVia.loginInUser:
-        userData = await UserService.instance.logInUser(
-            identity: identity,
-            loginMethod: loginMethod,
-            deviceToken: deviceToken,
-            fullName: fullname);
-        break;
-      case LoginVia.logInFakeUser:
-        userData = await UserService.instance.logInFakeUser(
-            identity: identity,
-            loginMethod: loginMethod,
-            deviceToken: deviceToken,
-            password: password);
-        break;
-    }
-
-    Loggers.success("APP_LANGUAGE => ${userData?.appLanguage}");
-
-    Setting? setting = SessionManager.instance.getSettings();
-    if (userData?.isDummy == 0 && userData?.newRegister == true && setting?.registrationBonusStatus == 1) {
-      final translations = Get.find<DynamicTranslations>();
-      final languageData = translations.keys[userData?.appLanguage] ?? {};
-
-      NotificationService.instance.pushNotification(
-          title: languageData[LKey.registrationBonusTitle] ?? LKey.registrationBonusTitle.tr,
-          body: languageData[LKey.registrationBonusDescription] ?? LKey.registrationBonusDescription.tr,
-          type: NotificationType.other,
-          deviceType: userData?.device,
-          token: userData?.deviceToken,
-          authorizationToken: userData?.token?.authToken);
-    }
-
-    SubscriptionManager.shared.login('${userData?.id}');
-    return userData;
+    return await UserService.instance.logInFakeUser(
+        identity: identity,
+        loginMethod: loginMethod,
+        deviceToken: deviceToken,
+        password: password);
   }
 
   Future<UserCredential?> createUserWithEmailAndPassword() async {
@@ -255,6 +218,3 @@ class AuthScreenController extends BaseController {
     }, milliseconds: 250);
   }
 }
-
-enum LoginVia { loginInUser, logInFakeUser }
-enum LoginMethod { email, google, apple }
