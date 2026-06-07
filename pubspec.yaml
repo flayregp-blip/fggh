@@ -102,17 +102,17 @@ dependencies:
   url_launcher: ^6.3.2
   webview_flutter_plus: ^0.4.19
   http: ^1.6.0
-  share_plus: ^12.0.2
+  share_plus: ^10.0.2
   internet_connection_checker_plus: ^2.9.2
-  connectivity_plus: ^7.0.1
+  connectivity_plus: ^6.0.5
   collection: ^1.19.1
   html: ^0.15.6
   app_links: ^7.0.1
   crisp_chat: ^2.0.3
 
   ### 🔐 Login & Auth
-  google_sign_in: ^7.2.1
-  sign_in_with_apple: ^7.0.2
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.1
 
   ### 🔔 Notifications
   flutter_local_notifications: ^18.0.1
