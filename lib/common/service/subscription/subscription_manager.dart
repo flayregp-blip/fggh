@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:shortzz/common/manager/session_manager.dart';
-import 'package:shortzz/common/service/api/user_service.dart';
-import 'package:shortzz/model/user_model/user_model.dart';
-import 'package:shortzz/utilities/const_res.dart';
+import 'package:flayr/common/manager/session_manager.dart';
+import 'package:flayr/common/service/api/user_service.dart';
+import 'package:flayr/model/user_model/user_model.dart';
+import 'package:flayr/utilities/const_res.dart';
 
 bool isPurchaseConfig = false;
 RxBool isSubscribe = false.obs;
