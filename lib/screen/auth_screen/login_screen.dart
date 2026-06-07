@@ -53,12 +53,14 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 55),
                       _buildField(
+                        context: context,
                         hint: LKey.enterYourEmail.tr,
                         controller: controller.emailController,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
                       _buildField(
+                        context: context,
                         hint: LKey.enterPassword.tr,
                         controller: controller.passwordController,
                         isPassword: true,
@@ -145,6 +147,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildField({
+    required BuildContext context,
     required String hint,
     required TextEditingController controller,
     bool isPassword = false,
