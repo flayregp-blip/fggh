@@ -1,12 +1,12 @@
-import 'package:flayr/common/manager/firebase_notification_manager.dart';
-import 'package:flayr/common/manager/logger.dart';
-import 'package:flayr/common/manager/session_manager.dart';
-import 'package:flayr/common/service/subscription/subscription_manager.dart';
-import 'package:flayr/common/widget/restart_widget.dart';
-import 'package:flayr/languages/dynamic_translations.dart';
-import 'package:flayr/screen/splash_screen/splash_screen.dart';
-import 'package:flayr/utilities/theme_res.dart';
-import 'package:flayr/utilities/const_res.dart';
+import 'package:shortzz/common/manager/firebase_notification_manager.dart';
+import 'package:shortzz/common/manager/logger.dart';
+import 'package:shortzz/common/manager/session_manager.dart';
+import 'package:shortzz/common/service/subscription/subscription_manager.dart';
+import 'package:shortzz/common/widget/restart_widget.dart';
+import 'package:shortzz/languages/dynamic_translations.dart';
+import 'package:shortzz/screen/splash_screen/splash_screen.dart';
+import 'package:shortzz/utilities/theme_res.dart';
+import 'package:shortzz/utilities/const_res.dart';
 
 import 'common/service/network_helper/network_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
