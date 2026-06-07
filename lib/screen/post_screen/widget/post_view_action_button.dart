@@ -23,6 +23,15 @@ class PostViewActionButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Gift (first as requested)
+          if (post.userId != SessionManager.instance.getUserID())
+            _buildActionItem(
+              icon: Icons.card_giftcard_outlined,
+              count: null,
+              onTap: () => controller.onGiftTap(post),
+              showCount: false,
+            ),
+
           // Views
           _buildActionItem(
             icon: Icons.remove_red_eye_outlined,
@@ -52,15 +61,6 @@ class PostViewActionButton extends StatelessWidget {
             count: post.saves,
             onTap: () => controller.onSaved(post),
           ),
-
-          // Gift
-          if (post.userId != SessionManager.instance.getUserID())
-            _buildActionItem(
-              icon: Icons.card_giftcard_outlined,
-              count: null,
-              onTap: () => controller.onGiftTap(post),
-              showCount: false,
-            ),
         ],
       ),
     );
