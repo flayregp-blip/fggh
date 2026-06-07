@@ -67,7 +67,7 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ["email"]).signIn();
       if (googleUser == null) {
         stopLoader();
         return;
