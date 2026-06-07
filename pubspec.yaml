@@ -1,73 +1,40 @@
 name: shortzz
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.0
-
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
-dependency_overrides:
-  permission_handler: ^11.3.1
-
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
-
-  ### 🔥 Firebase
-  supabase_flutter: ^2.0.2
-  firebase_core: ^3.2.0
-  firebase_auth: ^5.1.2
-  cloud_firestore: ^5.1.0
-  firebase_messaging: ^15.0.3
-  onesignal_flutter: ^5.2.6
-  google_mobile_ads: ^7.0.0
-
-  ### 📦 State Management & Storage
-  get: ^4.8.0
-  get_storage: ^2.1.2
-
-  ### 🎨 UI & Design
-  figma_squircle_updated: ^1.0.2
-  detectable_text_field: ^3.0.3
-  dotted_border: ^3.1.1
-  shimmer: ^3.0.0
-  google_fonts: ^7.0.0
-  expandable_page_view: ^1.2.1
-  readmore: ^3.0.0
-  proste_indexed_stack: ^0.2.4
-  keyboard_avoider: ^0.2.0
-  flutter_staggered_grid_view: ^0.8.0
+  cupertino_icons: any
+  get: any
+  get_storage: any
+  supabase_flutter: any
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: any
+  firebase_messaging: any
+  onesignal_flutter: any
+  google_mobile_ads: any
+  figma_squircle_updated: any
+  detectable_text_field: any
+  dotted_border: any
+  shimmer: any
+  google_fonts: any
+  expandable_page_view: any
+  readmore: any
+  proste_indexed_stack: any
+  keyboard_avoider: any
+  flutter_staggered_grid_view: any
   smooth_highlight: any
-  photo_view: ^0.15.0
-  dismissible_page: ^1.0.2
-
-
-  ### 📸 Media (Image, Video, Audio)
-  cached_network_image: ^3.4.1
+  photo_view: any
+  dismissible_page: any
+  cached_network_image: any
   audio_waveforms: any
   just_audio: any
   video_player: any
@@ -75,19 +42,13 @@ dependencies:
   flutter_image_compress: any
   deepar_flutter_plus: any
   flutter_native_video_trimmer: any
-  audio_session: ^0.2.3
-
-  ### 🧭 Location & Maps
-  google_maps_flutter: ^2.14.1
-  geocoding: ^3.0.0
-  geolocator: ^12.0.0
-
-  ### 📷 QR & Barcode
+  audio_session: any
+  google_maps_flutter: any
+  geocoding: any
+  geolocator: any
   pretty_qr_code: any
   mobile_scanner: any
   google_mlkit_barcode_scanning: any
-
-  ### 📤 File Handling & Pickers
   image_picker: any
   flutter_cache_manager: any
   path_provider: any
@@ -95,73 +56,43 @@ dependencies:
   gal: any
   mime: any
   csv: any
-
-
-
-  ### 🔗 Links & External Services
-  url_launcher: ^6.3.2
-  webview_flutter_plus: ^0.4.19
-  http: ^1.6.0
-  share_plus: ^10.0.2
-  internet_connection_checker_plus: ^2.5.1
-  connectivity_plus: ^6.0.5
-  collection: ^1.19.1
-  html: ^0.15.6
-  app_links: ^7.0.1
-  crisp_chat: ^2.0.3
-
-  ### 🔐 Login & Auth
+  url_launcher: any
+  webview_flutter_plus: any
+  http: any
+  share_plus: any
+  internet_connection_checker_plus: any
+  connectivity_plus: any
+  collection: any
+  html: any
+  app_links: any
+  crisp_chat: any
   google_sign_in: any
   sign_in_with_apple: any
-
-  ### 🔔 Notifications
-  flutter_local_notifications: ^18.0.1
-
-  ### 💳 Purchases & Payments
+  flutter_local_notifications: any
   purchases_flutter: any
-
-  ### 🧰 Utilities
-  intl: ^0.20.2
-  uuid: ^4.4.0
+  intl: any
+  uuid: any
   flutter_keyboard_visibility: any
-  visibility_detector: ^0.4.0+2
-  flutter_widget_from_html_core: ^0.17.0
-  wakelock_plus: ^1.4.1
-  permission_handler: ^11.3.1
-  zego_express_engine: ^3.23.1
-  rxdart: ^0.27.7
-  image: ^4.7.2
-  lottie: ^3.1.1
-  ### 🔌 Custom Plugins
+  visibility_detector: any
+  flutter_widget_from_html_core: any
+  wakelock_plus: any
+  permission_handler: any
+  zego_express_engine: any
+  rxdart: any
+  image: any
+  lottie: any
   retrytech_plugin:
     git:
       url: https://gitlab.com/jeelkhokhariya59/retrytech_plugin.git
       ref: master
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: any
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^4.0.0
-
-# For information on the generic Dart part of this file, see
-# the following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
     - assets/icons/
@@ -170,17 +101,6 @@ flutter:
     - android/app/src/main/res/mipmap-hdpi/
     - ios/Runner/Assets.xcassets/AppIcon.appiconset/
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the fonts key with a
-  # list giving the asset and other descriptors. For
-  # example:
   fonts:
     - family: Black
       fonts:
