@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shortzz/common/controller/base_controller.dart';
 import 'package:shortzz/common/functions/debounce_action.dart';
 import 'package:shortzz/common/manager/firebase_notification_manager.dart';
@@ -26,45 +27,25 @@ class AuthScreenController extends BaseController {
   TextEditingController confirmPassController = TextEditingController();
 
   final supabase = supa.Supabase.instance.client;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   void onInit() {
     CommonService.instance.fetchGlobalSettings();
     FirebaseNotificationManager.instance;
     super.onInit();
-    _listenToAuthState();
   }
 
-  void _listenToAuthState() {
-    supabase.auth.onAuthStateChange.listen((data) async {
-      final event = data.event;
-      final session = data.session;
-      if (event == supa.AuthChangeEvent.signedIn && session != null) {
-        final email = session.user.email ?? '';
-        if (email.isEmpty) return;
-        final fullname = session.user.userMetadata?['full_name'] 
-            ?? session.user.userMetadata?['name'] 
-            ?? email.split('@')[0];
-        String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-        Loggers.info('Google OAuth - email: $email, fullname: $fullname, token: $deviceToken');
-        final resp = await UserService.instance.logInUser(
-            identity: email,
-            loginMethod: LoginMethod.google,
-            deviceToken: deviceToken,
-            fullName: fullname);
-        Loggers.info('Google OAuth - resp: ${resp?.toJson()}');
-        stopLoader();
-        if (resp != null) _navigateScreen(resp);
-      }
-    });
-  }
-
+  // ==================== EMAIL LOGIN ====================
   Future<void> onLogin() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
+
     if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
     if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
+
     showLoader();
+
     if (GetUtils.isEmail(email)) {
       final UserCredential? credential = await signInWithEmailAndPassword();
       if (credential == null) {
@@ -75,50 +56,59 @@ class AuthScreenController extends BaseController {
         stopLoader();
         return showSnackBar(LKey.verifyEmailFirst.tr);
       }
+
       String fullname = credential.user?.displayName ?? email.split('@')[0];
       final user.User? data = await _registration(
-          identity: email, loginMethod: LoginMethod.email, fullname: fullname, loginVia: LoginVia.loginInUser);
+          identity: email,
+          loginMethod: LoginMethod.email,
+          fullname: fullname,
+          loginVia: LoginVia.loginInUser);
       stopLoader();
       if (data != null) _navigateScreen(data);
     } else {
       final user.User? data = await _registration(
-          identity: email, loginMethod: LoginMethod.email, loginVia: LoginVia.logInFakeUser, password: password);
+          identity: email,
+          loginMethod: LoginMethod.email,
+          loginVia: LoginVia.logInFakeUser,
+          password: password);
       stopLoader();
       if (data != null) _navigateScreen(data);
     }
   }
 
-  Future<void> onCreateAccount() async {
-    if (fullNameController.text.trim().isEmpty) return showSnackBar(LKey.fullNameEmpty.tr);
-    if (emailController.text.trim().isEmpty) return showSnackBar(LKey.enterEmail.tr);
-    if (passwordController.text.trim().isEmpty) return showSnackBar(LKey.enterAPassword.tr);
-    if (confirmPassController.text.trim().isEmpty) return showSnackBar(LKey.confirmPasswordEmpty.tr);
-    if (!GetUtils.isEmail(emailController.text.trim())) return showSnackBar(LKey.invalidEmail.tr);
-    if (passwordController.text.trim() != confirmPassController.text.trim()) return showSnackBar(LKey.passwordMismatch.tr);
-    showLoader();
-    UserCredential? credential = await createUserWithEmailAndPassword();
-    if (credential != null) {
-      await _registration(
-          identity: emailController.text.trim(),
-          loginMethod: LoginMethod.email,
-          fullname: fullNameController.text.trim(),
-          loginVia: LoginVia.loginInUser);
-      credential.user?.updateDisplayName(fullNameController.text.trim());
-      credential.user?.sendEmailVerification();
-      Get.back();
-      Get.back();
-      showSnackBar(LKey.verificationLinkSent.tr);
-    }
-  }
-
-  void onGoogleTap() async {
+  // ==================== NATIVE GOOGLE SIGN IN ====================
+  Future<void> onGoogleTap() async {
     showLoader();
     try {
-      await supabase.auth.signInWithOAuth(
-        supa.OAuthProvider.google,
-        redirectTo: 'com.abdullah.flayr://login-callback',
-        authScreenLaunchMode: supa.LaunchMode.inAppWebView,
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        stopLoader();
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final email = userCredential.user?.email ?? '';
+      final fullname = userCredential.user?.displayName ?? email.split('@')[0];
+
+      String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
+
+      final user.User? data = await _registration(
+          identity: email,
+          loginMethod: LoginMethod.google,
+          fullname: fullname,
+          loginVia: LoginVia.loginInUser);
+
+      stopLoader();
+      if (data != null) _navigateScreen(data);
     } catch (e) {
       Loggers.error(e);
       stopLoader();
@@ -126,24 +116,30 @@ class AuthScreenController extends BaseController {
     }
   }
 
-  void onAppleTap() async {
+  // ==================== APPLE SIGN IN ====================
+  Future<void> onAppleTap() async {
     showLoader();
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
       );
-      final response = await supabase.auth.signInWithIdToken(
-        provider: supa.OAuthProvider.apple,
-        idToken: appleCredential.identityToken ?? '',
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
         accessToken: appleCredential.authorizationCode,
       );
-      final email = response.user?.email ?? '';
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      final email = userCredential.user?.email ?? appleCredential.email ?? '';
       final fullname = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+
       final user.User? data = await _registration(
-          identity: email,
+          identity: email.isNotEmpty ? email : userCredential.user?.uid ?? '',
           loginMethod: LoginMethod.apple,
-          fullname: fullname.isNotEmpty ? fullname : email.split('@')[0],
+          fullname: fullname.isNotEmpty ? fullname : 'Apple User',
           loginVia: LoginVia.loginInUser);
+
       stopLoader();
       if (data != null) _navigateScreen(data);
     } catch (e) {
@@ -153,27 +149,42 @@ class AuthScreenController extends BaseController {
     }
   }
 
-  Future<user.User?> _registration(
-      {required String identity,
-      required LoginMethod loginMethod,
-      String? fullname,
-      required LoginVia loginVia,
-      String? password}) async {
+  // ==================== باقي الدوال (Registration + Navigation) ====================
+  Future<user.User?> _registration({
+    required String identity,
+    required LoginMethod loginMethod,
+    String? fullname,
+    required LoginVia loginVia,
+    String? password,
+  }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
+
     user.User? userData;
+
     switch (loginVia) {
       case LoginVia.loginInUser:
         userData = await UserService.instance.logInUser(
-            identity: identity, loginMethod: loginMethod, deviceToken: deviceToken, fullName: fullname);
+            identity: identity,
+            loginMethod: loginMethod,
+            deviceToken: deviceToken,
+            fullName: fullname);
+        break;
       case LoginVia.logInFakeUser:
         userData = await UserService.instance.logInFakeUser(
-            identity: identity, loginMethod: loginMethod, deviceToken: deviceToken, password: password);
+            identity: identity,
+            loginMethod: loginMethod,
+            deviceToken: deviceToken,
+            password: password);
+        break;
     }
-  Loggers.success("APP_LANGUAGE => ${userData?.appLanguage}");
+
+    Loggers.success("APP_LANGUAGE => ${userData?.appLanguage}");
+
     Setting? setting = SessionManager.instance.getSettings();
     if (userData?.isDummy == 0 && userData?.newRegister == true && setting?.registrationBonusStatus == 1) {
       final translations = Get.find<DynamicTranslations>();
       final languageData = translations.keys[userData?.appLanguage] ?? {};
+
       NotificationService.instance.pushNotification(
           title: languageData[LKey.registrationBonusTitle] ?? LKey.registrationBonusTitle.tr,
           body: languageData[LKey.registrationBonusDescription] ?? LKey.registrationBonusDescription.tr,
@@ -182,6 +193,7 @@ class AuthScreenController extends BaseController {
           token: userData?.deviceToken,
           authorizationToken: userData?.token?.authToken);
     }
+
     SubscriptionManager.shared.login('${userData?.id}');
     return userData;
   }
@@ -189,7 +201,8 @@ class AuthScreenController extends BaseController {
   Future<UserCredential?> createUserWithEmailAndPassword() async {
     try {
       final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text.trim(), password: passwordController.text.trim());
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
       SessionManager.instance.setPassword(passwordController.text.trim());
       return credential;
     } on FirebaseAuthException catch (e) {
@@ -204,7 +217,8 @@ class AuthScreenController extends BaseController {
   Future<UserCredential?> signInWithEmailAndPassword() async {
     try {
       return await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(), password: passwordController.text.trim());
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
     } on FirebaseAuthException catch (e) {
       stopLoader();
       if (e.code == 'user-not-found') showSnackBar(LKey.noUserFound.tr);
@@ -217,7 +231,10 @@ class AuthScreenController extends BaseController {
 
   void forgetPassword() async {
     final email = forgetEmailController.text.trim();
-    if (email.isEmpty) { showSnackBar(LKey.enterEmail.tr); return; }
+    if (email.isEmpty) {
+      showSnackBar(LKey.enterEmail.tr);
+      return;
+    }
     showLoader();
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -240,3 +257,4 @@ class AuthScreenController extends BaseController {
 }
 
 enum LoginVia { loginInUser, logInFakeUser }
+enum LoginMethod { email, google, apple }
