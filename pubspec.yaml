@@ -38,11 +38,11 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   ### 🔥 Firebase
-  supabase_flutter: ^2.3.0
-  firebase_core: ^4.14.0
-  firebase_auth: ^6.2.0
-  cloud_firestore: ^6.2.0
-  firebase_messaging: ^16.2.0
+  supabase_flutter: ^2.0.2
+  firebase_core: ^3.2.0
+  firebase_auth: ^5.1.2
+  cloud_firestore: ^5.1.0
+  firebase_messaging: ^15.0.3
   onesignal_flutter: ^5.2.6
   google_mobile_ads: ^7.0.0
 
@@ -70,8 +70,8 @@ dependencies:
   cached_network_image: ^3.4.1
   audio_waveforms: ^2.0.2
   just_audio: ^0.10.6
-  video_player: ^2.10.2
-  video_compress: ^3.1.5
+  video_player: ^2.9.2
+  video_compress: ^3.1.2
   flutter_image_compress: ^2.4.0
   deepar_flutter_plus: ^0.2.2
   flutter_native_video_trimmer: ^1.1.10
@@ -88,9 +88,9 @@ dependencies:
   google_mlkit_barcode_scanning: ^0.14.2 #For image scanning
 
   ### 📤 File Handling & Pickers
-  image_picker: ^1.2.2
-  flutter_cache_manager: ^3.4.2
-  path_provider: ^2.1.6
+  image_picker: ^1.1.2
+  flutter_cache_manager: ^3.3.2
+  path_provider: ^2.1.4
   path: ^1.9.1
   gal: ^2.2.0
   mime: ^2.0.0
