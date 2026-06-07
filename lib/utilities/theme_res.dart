@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flayr/utilities/color_res.dart';
-import 'package:flayr/utilities/font_res.dart';
+import 'package:shortzz/utilities/color_res.dart';
+import 'package:shortzz/utilities/font_res.dart';
 
 class ThemeRes {
   /// Theme light mode
@@ -63,7 +63,6 @@ Color textLightGrey(BuildContext context) {
 
 Color bgGrey(BuildContext context) {
   return Theme.of(context).dividerColor;
-}
 
 Color themeAccentSolid(BuildContext context) {
   return Theme.of(context).textTheme.labelSmall?.color ??
@@ -72,27 +71,21 @@ Color themeAccentSolid(BuildContext context) {
 
 Color disableGrey(BuildContext context) {
   return Theme.of(context).textTheme.labelLarge?.color ?? ColorRes.disabledGrey;
-}
 
 Color scaffoldBackgroundColor(BuildContext context) {
   return Theme.of(context).scaffoldBackgroundColor;
-}
 
 Color blueFollow(BuildContext context) {
   return Theme.of(context).cardTheme.color ?? blueFollow(context);
-}
 
 Color bgMediumGrey(BuildContext context) {
   return Theme.of(context).cardColor;
-}
 
 Color blackPure(BuildContext context) {
   return Theme.of(context).primaryColorDark;
-}
 
 Color bgLightGrey(BuildContext context) {
   return Theme.of(context).appBarTheme.backgroundColor ?? ColorRes.bgLightGrey;
-}
 
 Color themeColor(BuildContext context) {
   return Theme.of(context).canvasColor;
