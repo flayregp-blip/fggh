@@ -1,4 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -67,10 +67,10 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      await Supabase.instance.client.auth.signInWithOAuth(
-        OAuthProvider.google,
+      await supa.Supabase.instance.client.auth.signInWithOAuth(
+        supa.OAuthProvider.google,
         redirectTo: 'com.abdullah.flayr://login-callback',
-        authScreenLaunchMode: LaunchMode.inAppWebView,
+        authScreenLaunchMode: supa.LaunchMode.inAppWebView,
       );
     } catch (e) {
       Loggers.error(e);
