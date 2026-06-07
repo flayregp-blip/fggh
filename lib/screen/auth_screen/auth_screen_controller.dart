@@ -213,4 +213,27 @@ class AuthScreenController extends BaseController {
       Get.offAll(() => DashboardScreen(myUser: data));
     }, milliseconds: 250);
   }
+
+  Future<void> onCreateAccount() async {
+    final fullName = fullNameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPassController.text.trim();
+
+    if (fullName.isEmpty) return showSnackBar(LKey.enterFullName.tr);
+    if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
+    if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
+    if (password != confirmPassword) return showSnackBar(LKey.passwordNotMatch.tr);
+
+    showLoader();
+    final UserCredential? credential = await createUserWithEmailAndPassword();
+    if (credential != null) {
+      final user.User? data = await _logInUser(
+          identity: email, loginMethod: LoginMethod.email, fullname: fullName);
+      stopLoader();
+      if (data != null) _navigateScreen(data);
+    } else {
+      stopLoader();
+    }
+  }
 }
