@@ -26,14 +26,14 @@ class PostViewActionButton extends StatelessWidget {
           // Views
           _buildActionItem(
             icon: Icons.remove_red_eye_outlined,
-            count: post.views ?? 0,
+            count: post.views,
             onTap: null,
           ),
 
           // Likes
           _buildActionItem(
             icon: (post.isLiked ?? false) ? Icons.favorite : Icons.favorite_border,
-            count: post.likes ?? 0,
+            count: post.likes,
             color: (post.isLiked ?? false) ? Colors.red : null,
             onTap: () => controller.onLike(post),
           ),
@@ -42,14 +42,14 @@ class PostViewActionButton extends StatelessWidget {
           if (post.canComment == 1)
             _buildActionItem(
               icon: Icons.chat_bubble_outline,
-              count: post.comments ?? 0,
+              count: post.comments,
               onTap: controller.onComment,
             ),
 
           // Save
           _buildActionItem(
             icon: (post.isSaved ?? false) ? Icons.bookmark : Icons.bookmark_border,
-            count: post.saves ?? 0,
+            count: post.saves,
             onTap: () => controller.onSaved(post),
           ),
 
@@ -68,7 +68,7 @@ class PostViewActionButton extends StatelessWidget {
 
   Widget _buildActionItem({
     required IconData icon,
-    int? count,
+    num? count,
     Color? color,
     required VoidCallback? onTap,
     bool showCount = true,
@@ -89,7 +89,7 @@ class PostViewActionButton extends StatelessWidget {
             if (showCount && count != null) ...[
               const SizedBox(width: 5),
               Text(
-                count.toString(),
+                count.toInt().toString(),
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey[700],
