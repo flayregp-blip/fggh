@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependency_overrides:
-  permission_handler: ^11.4.4
+  permission_handler: ^11.3.1
 
 
 dependencies:
@@ -38,13 +38,13 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   ### 🔥 Firebase
-  supabase_flutter: ^2.5.0
-  firebase_core: ^4.15.0
-  firebase_auth: ^6.3.0
-  cloud_firestore: ^6.3.0
-  firebase_messaging: ^16.3.0
-  onesignal_flutter: ^5.3.0
-  google_mobile_ads: ^7.1.0
+  supabase_flutter: ^2.3.0
+  firebase_core: ^4.14.0
+  firebase_auth: ^6.2.0
+  cloud_firestore: ^6.2.0
+  firebase_messaging: ^16.2.0
+  onesignal_flutter: ^5.2.6
+  google_mobile_ads: ^7.0.0
 
   ### 📦 State Management & Storage
   get: ^4.8.0
@@ -127,7 +127,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   flutter_widget_from_html_core: ^0.17.0
   wakelock_plus: ^1.4.1
-  permission_handler: ^12.0.2
+  permission_handler: ^11.3.1
   zego_express_engine: ^3.23.1
   rxdart: ^0.28.0
   image: ^4.7.2
