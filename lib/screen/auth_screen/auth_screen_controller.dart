@@ -194,4 +194,4 @@ class AuthScreenController extends BaseController {
   }
 }
 
-enum LoginMethod { email, google, apple }
+
