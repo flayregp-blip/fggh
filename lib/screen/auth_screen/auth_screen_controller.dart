@@ -8,8 +8,7 @@ import 'package:shortzz/common/manager/firebase_notification_manager.dart';
 import 'package:shortzz/common/manager/logger.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
 import 'package:shortzz/common/service/api/common_service.dart';
-import 'package:shortzz/common/service/api/user_service.dart' as u_service;
-import 'package:shortzz/common/service/subscription/subscription_manager.dart';
+import 'package:shortzz/common/service/api/user_service.dart';
 import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/user_model/user_model.dart' as user;
 import 'package:shortzz/screen/dashboard_screen/dashboard_screen.dart';
@@ -18,9 +17,9 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthScreenController extends BaseController {
   TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController forgetEmailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
+  TextEditingController forgetEmailController = TextEditingController();
 
   @override
   void onInit() {
@@ -28,6 +27,7 @@ class AuthScreenController extends BaseController {
     super.onInit();
   }
 
+  // ==================== EMAIL LOGIN ====================
   Future<void> onLogin() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -38,8 +38,11 @@ class AuthScreenController extends BaseController {
     showLoader();
 
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
       if (credential.user?.emailVerified == false) {
         stopLoader();
         return showSnackBar(LKey.verifyEmailFirst.tr);
@@ -55,47 +58,53 @@ class AuthScreenController extends BaseController {
     }
   }
 
+  // ==================== CREATE ACCOUNT ====================
   Future<void> onCreateAccount() async {
-    final fullName = fullNameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    final confirmPass = confirmPassController.text.trim();
-
-    if (fullName.isEmpty) return showSnackBar(LKey.fullNameEmpty.tr);
-    if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
-    if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
-    if (confirmPass.isEmpty) return showSnackBar(LKey.confirmPasswordEmpty.tr);
-    if (password != confirmPass) return showSnackBar(LKey.passwordMismatch.tr);
+    if (fullNameController.text.trim().isEmpty) return showSnackBar(LKey.fullNameEmpty.tr);
+    if (emailController.text.trim().isEmpty) return showSnackBar(LKey.enterEmail.tr);
+    if (passwordController.text.trim().isEmpty) return showSnackBar(LKey.enterAPassword.tr);
+    if (confirmPassController.text.trim().isEmpty) return showSnackBar(LKey.confirmPasswordEmpty.tr);
+    if (passwordController.text.trim() != confirmPassController.text.trim()) return showSnackBar(LKey.passwordMismatch.tr);
 
     showLoader();
+
     try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user?.updateDisplayName(fullName);
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      await credential.user?.updateDisplayName(fullNameController.text.trim());
       await credential.user?.sendEmailVerification();
-      
-      final data = await _loginUser(identity: email, loginMethod: LoginMethod.email, fullname: fullName);
+
+      await _loginUser(
+        identity: emailController.text.trim(),
+        loginMethod: LoginMethod.email,
+        fullname: fullNameController.text.trim(),
+      );
+
       stopLoader();
-      if (data != null) {
-        Get.back();
-        showSnackBar(LKey.verificationLinkSent.tr);
-      }
+      Get.back();
+      Get.back();
+      showSnackBar(LKey.verificationLinkSent.tr);
     } catch (e) {
       stopLoader();
-      showSnackBar(e.toString());
+      showSnackBar('فشل إنشاء الحساب');
     }
   }
 
+  // ==================== NATIVE GOOGLE SIGN IN ====================
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final dynamic googleSignIn = GoogleSignIn(scopes: ['email']);
-      final googleUser = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         stopLoader();
         return;
       }
 
-      final googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -115,6 +124,7 @@ class AuthScreenController extends BaseController {
     }
   }
 
+  // ==================== APPLE SIGN IN ====================
   Future<void> onAppleTap() async {
     showLoader();
     try {
@@ -145,10 +155,14 @@ class AuthScreenController extends BaseController {
     }
   }
 
-  void forgetPassword() async {
+  // ==================== FORGET PASSWORD ====================
+  Future<void> forgetPassword() async {
     final email = forgetEmailController.text.trim();
-    if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
-    
+    if (email.isEmpty) {
+      showSnackBar(LKey.enterEmail.tr);
+      return;
+    }
+
     showLoader();
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -157,47 +171,23 @@ class AuthScreenController extends BaseController {
       showSnackBar(LKey.resetPasswordLinkSent.tr);
     } catch (e) {
       stopLoader();
-      showSnackBar(e.toString());
+      showSnackBar('فشل إرسال الرابط');
     }
   }
 
+  // ==================== Helper Methods ====================
   Future<user.User?> _loginUser({
     required String identity,
     required LoginMethod loginMethod,
     String? fullname,
   }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-    return await u_service.UserService.instance.logInUser(
+    return await UserService.instance.logInUser(
       identity: identity,
-      loginMethod: u_service.LoginMethod.values.firstWhere((e) => e.name == loginMethod.name),
+      loginMethod: loginMethod,
       deviceToken: deviceToken,
       fullName: fullname,
     );
-  }
-
-  Future<user.User?> _loginFakeUser({
-    required String identity,
-    required String password,
-    required LoginMethod loginMethod,
-  }) async {
-    String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-    return await u_service.UserService.instance.logInFakeUser(
-      identity: identity,
-      password: password,
-      loginMethod: u_service.LoginMethod.values.firstWhere((e) => e.name == loginMethod.name),
-      deviceToken: deviceToken,
-    );
-  }
-
-  Future<UserCredential?> signInWithEmailAndPassword() async {
-    try {
-      return await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } catch (e) {
-      return null;
-    }
   }
 
   void _navigateScreen(user.User? data) {
@@ -210,5 +200,3 @@ class AuthScreenController extends BaseController {
 }
 
 enum LoginMethod { email, google, apple }
-
-
