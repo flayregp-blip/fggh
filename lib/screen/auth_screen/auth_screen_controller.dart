@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart' as g_sign;
 import 'package:shortzz/common/controller/base_controller.dart';
 import 'package:shortzz/common/functions/debounce_action.dart';
 import 'package:shortzz/common/manager/firebase_notification_manager.dart';
@@ -88,7 +88,7 @@ class AuthScreenController extends BaseController {
   Future<void> onGoogleTap() async {
     showLoader();
     try {
-      final googleUser = await GoogleSignIn(scopes: ['email']).signIn();
+      final googleUser = await g_sign.GoogleSignIn(scopes: ['email']).signIn();
       if (googleUser == null) {
         stopLoader();
         return;
