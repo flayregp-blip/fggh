@@ -8,7 +8,7 @@ import 'package:shortzz/common/manager/firebase_notification_manager.dart';
 import 'package:shortzz/common/manager/logger.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
 import 'package:shortzz/common/service/api/common_service.dart';
-import 'package:shortzz/common/service/api/user_service.dart' hide LoginMethod;
+import 'package:shortzz/common/service/api/user_service.dart' as u_service;
 import 'package:shortzz/common/service/subscription/subscription_manager.dart';
 import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/user_model/user_model.dart' as user;
@@ -167,11 +167,25 @@ class AuthScreenController extends BaseController {
     String? fullname,
   }) async {
     String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
-    return await UserService.instance.logInUser(
+    return await u_service.UserService.instance.logInUser(
       identity: identity,
-      loginMethod: loginMethod,
+      loginMethod: u_service.LoginMethod.values.firstWhere((e) => e.name == loginMethod.name),
       deviceToken: deviceToken,
       fullName: fullname,
+    );
+  }
+
+  Future<user.User?> _loginFakeUser({
+    required String identity,
+    required String password,
+    required LoginMethod loginMethod,
+  }) async {
+    String deviceToken = await FirebaseNotificationManager.instance.getNotificationToken() ?? '';
+    return await u_service.UserService.instance.logInFakeUser(
+      identity: identity,
+      password: password,
+      loginMethod: u_service.LoginMethod.values.firstWhere((e) => e.name == loginMethod.name),
+      deviceToken: deviceToken,
     );
   }
 
