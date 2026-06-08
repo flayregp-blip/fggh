@@ -8,7 +8,7 @@ import 'package:shortzz/common/manager/firebase_notification_manager.dart';
 import 'package:shortzz/common/manager/logger.dart';
 import 'package:shortzz/common/manager/session_manager.dart';
 import 'package:shortzz/common/service/api/common_service.dart';
-import 'package:shortzz/common/service/api/user_service.dart';
+import 'package:shortzz/common/service/api/user_service.dart' hide LoginMethod;
 import 'package:shortzz/common/service/subscription/subscription_manager.dart';
 import 'package:shortzz/languages/languages_keys.dart';
 import 'package:shortzz/model/user_model/user_model.dart' as user;
@@ -194,5 +194,7 @@ class AuthScreenController extends BaseController {
     }, milliseconds: 250);
   }
 }
+
+enum LoginMethod { email, google, apple }
 
 

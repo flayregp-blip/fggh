@@ -9,7 +9,7 @@ import 'package:shortzz/utilities/theme_res.dart';
 import 'package:shortzz/utilities/const_res.dart';
 
 import 'common/service/network_helper/network_helper.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide GoogleSignIn;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'dart:async';
 import 'dart:convert';
