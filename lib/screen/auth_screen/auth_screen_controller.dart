@@ -16,9 +16,11 @@ import 'package:shortzz/screen/dashboard_screen/dashboard_screen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthScreenController extends BaseController {
+  TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   TextEditingController forgetEmailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPassController = TextEditingController();
 
   @override
   void onInit() {
@@ -53,6 +55,36 @@ class AuthScreenController extends BaseController {
     }
   }
 
+  Future<void> onCreateAccount() async {
+    final fullName = fullNameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPass = confirmPassController.text.trim();
+
+    if (fullName.isEmpty) return showSnackBar(LKey.fullNameEmpty.tr);
+    if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
+    if (password.isEmpty) return showSnackBar(LKey.enterAPassword.tr);
+    if (confirmPass.isEmpty) return showSnackBar(LKey.confirmPasswordEmpty.tr);
+    if (password != confirmPass) return showSnackBar(LKey.passwordMismatch.tr);
+
+    showLoader();
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user?.updateDisplayName(fullName);
+      await credential.user?.sendEmailVerification();
+      
+      final data = await _loginUser(identity: email, loginMethod: LoginMethod.email, fullname: fullName);
+      stopLoader();
+      if (data != null) {
+        Get.back();
+        showSnackBar(LKey.verificationLinkSent.tr);
+      }
+    } catch (e) {
+      stopLoader();
+      showSnackBar(e.toString());
+    }
+  }
+
   Future<void> onGoogleTap() async {
     showLoader();
     try {
@@ -78,7 +110,7 @@ class AuthScreenController extends BaseController {
     } catch (e) {
       Loggers.error(e);
       stopLoader();
-      showSnackBar('فشل تسجيل الدخول ب‌ Google');
+      showSnackBar('فشل تسجيل الدخول بـ Google');
     }
   }
 
@@ -108,7 +140,23 @@ class AuthScreenController extends BaseController {
     } catch (e) {
       Loggers.error(e);
       stopLoader();
-      showSnackBar('فشل تسجيل الدخول ب‌ Apple');
+      showSnackBar('فشل تسجيل الدخول بـ Apple');
+    }
+  }
+
+  void forgetPassword() async {
+    final email = forgetEmailController.text.trim();
+    if (email.isEmpty) return showSnackBar(LKey.enterEmail.tr);
+    
+    showLoader();
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      stopLoader();
+      Get.back();
+      showSnackBar(LKey.resetPasswordLinkSent.tr);
+    } catch (e) {
+      stopLoader();
+      showSnackBar(e.toString());
     }
   }
 
